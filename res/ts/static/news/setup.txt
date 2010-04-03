@@ -1,0 +1,14 @@
+plugin.tx_mmforumcomments_pi1 {
+  parameters {
+    tx_ttnews {
+      uid = tt_news
+      pageCommentCategory = {$plugin.tx_mmforum.mmforumnews_newsCommentCategory}
+      pageTopicAuthor = {$plugin.tx_mmforum.mmforumnews_newsTopicAuthor}
+    }
+    tx_t3blog {
+      uid = uid
+    }
+  }
+  pageCommentCategory = {$plugin.tx_mmforum.mmforumcomments_pageCommentCategory}
+  pageTopicAuthor = {$plugin.tx_mmforum.mmforumcomments_pageTopicAuthor}
+}

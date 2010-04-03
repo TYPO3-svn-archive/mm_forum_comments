@@ -1,0 +1,5 @@
+plugin.tx_mmforum {
+	#TODO
+}
+
+<INCLUDE_TYPOSCRIPT: source="FILE: typo3conf/tx_mmforum_config.ts">

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+    <meta type="array">
+        <description></description>
+        <type></type>
+        <csh_table></csh_table>
+        <labelContext type="array">
+        </labelContext>
+    </meta>
+    <data type="array">
+        <!-- ENGLISH LANGUAGE DATA -->
+        <languageKey index="default" type="array">
+            <label index="mod.category_title_short">Comments</label>
+            <label index="mod.category_title">Page comments</label>
+
+      			<label index="mod.pageCommentCategory.title">Page comment forum</label>
+      			<label index="mod.pageCommentCategory.desc">The forum that is to be used for page comments.</label>
+      			<label index="mod.pageTopicAuthor.title">Topic author</label>
+      			<label index="mod.pageTopicAuthor.desc">This user will be used as author for new comment topics.</label>
+        </languageKey>
+		<!-- GERMAN LANGUAGE DATA -->
+        <languageKey index="de" type="array">
+            <label index="mod.category_title_short">Kommentare</label>
+            <label index="mod.category_title">Seiten-Kommentare</label>
+
+      			<label index="mod.pageCommentCategory.title">Forum für Seiten-Kommentare</label>
+      			<label index="mod.pageCommentCategory.desc">Dieses Forum wird für Seiten-Kommentare verwendet.</label>
+      			<label index="mod.pageTopicAuthor.title">Themen-Verfasser</label>
+      			<label index="mod.pageTopicAuthor.desc">Dieser Benutzer wird als Verfasser für neue Kommentar-Themen verwendet.</label>
+        </languageKey>
+    </data>
+</T3locallang>
