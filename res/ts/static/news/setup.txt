@@ -2,13 +2,63 @@ plugin.tx_mmforumcomments_pi1 {
   parameters {
     tx_ttnews {
       uid = tt_news
+      recordsTable = tt_news
+      postdate = crdate
       pageCommentCategory = {$plugin.tx_mmforum.mmforumnews_newsCommentCategory}
       pageTopicAuthor = {$plugin.tx_mmforum.mmforumnews_newsTopicAuthor}
+      subject = COA
+  		subject {
+  			10 = TEXT
+  			10.value = [News]&nbsp;
+  			20 = TEXT
+  			20.field = title
+  		}
+      posttext = COA
+      posttext {
+      	10 = TEXT
+      	10.field = short
+      }
+      linktopage = COA
+      linktopage {
+      	10 = TEXT
+      	10.value (
+      	
+      	
+        [b]Read the whole news article:[/b]
+        )
+        11 = TEXT
+        11.value = -->&nbsp;
+      	20 = TEXT
+      	20 {
+          typolink {
+            # id of the Single News Page
+            parameter = 9
+            additionalParams.cObject = COA
+            additionalParams.cObject {
+              5 = TEXT
+              5{
+                field = uid
+                wrap = &tx_ttnews[tt_news]=|
+              }
+              10 = TEXT
+              10{
+                field = datetime
+                strftime = %Y
+                wrap = &tx_ttnews[year]=|
+              }
+              20 = TEXT
+              20{
+                field = datetime
+                strftime = %m
+                wrap = &tx_ttnews[month]=|
+              }
+            }
+          }
+        }
+      }
     }
     tx_t3blog {
       uid = uid
     }
   }
-  pageCommentCategory = {$plugin.tx_mmforum.mmforumcomments_pageCommentCategory}
-  pageTopicAuthor = {$plugin.tx_mmforum.mmforumcomments_pageTopicAuthor}
 }

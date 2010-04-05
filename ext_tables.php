@@ -3,6 +3,7 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
+t3lib_extMgm::addStaticFile($_EXTKEY, 'res/ts/static', 'mm_forum_comments');
 t3lib_extMgm::addStaticFile($_EXTKEY, 'res/ts/static/news', 'Settings for tt_news');
 
 t3lib_div::loadTCA('tt_content');

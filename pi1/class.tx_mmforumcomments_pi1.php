@@ -40,6 +40,9 @@
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
 
+require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_div.php');
+require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
+
 
 /**
  * Plugin 'mm_forum comments' for the 'mm_forum_comments' extension.
@@ -65,26 +68,38 @@ class tx_mmforumcomments_pi1 extends tslib_pibase {
 		$this->conf = $conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
+		
+		$relationTable = 'tx_mmforumcomments_links';
+		$pid = tx_mmforumcomments_div::getPageID();
 
-		$this->relationTable = 'tx_mmforumcomments_links';
-		$pid = $this->getPageID();
-		$this->loadTSSetupForPage($pid);
-		$parameters = $this->getParameter();
-		$commcat = $this->getCommentCategory($parameters[2]);
-		$commaut = $this->getTopicAuthor($parameters[2]);
-		$subject = $this->getSubject($parameters[2]);
-		$posttext = $this->getPosttext($parameters[2]);
-		$date = $this->getDate($parameters[2]);
-		$topicID = $this->getTopicID($pid, $parameters, $commcat, $commaut, $subject
-               $posttext, $date);
+  	$setup = tx_mmforumcomments_div::loadTSSetupForPage($pid);
+		$parameters = tx_mmforumcomments_div::getParameter($this->conf['parameters.']);
 
-    if ($topicID > 0) {
-      //show comments
-    } else {
-      #$this->createTopic($pid, $parameters);
+		$topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters, $relationTable);
+
+    if ($topicID == 0) { //create new topic
+      $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $this->conf);
+
+  		$commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $this->conf);
+  		$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $this->conf);
+  		$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $this->conf, $data);
+  		$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $this->conf, $data);
+  		$link = tx_mmforumcomments_div::getTSparsedString('linktopage', $parameters[2], $this->conf, $data);
+  		$date = tx_mmforumcomments_div::getDate($parameters[2], $this->conf, $data);
+
+      tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
+              $commcat, $commaut,
+              tx_mmforumcomments_div::prepareString($subject),
+              tx_mmforumcomments_div::prepareString($posttext.$link),
+              $date, $relationTable,
+              $setup['plugin.']['tx_mmforum.']['storagePID']);
+
+      $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters, $relationTable);
     }
-	debugster($this->setup['plugin.']['tx_mmforumcomments_pi1.']);
-	#debugster($this->setup['plugin.']['tx_mmforum_pi1.']['pid_forum']);
+
+    #$this->getDisplayComments($setup['plugin.']['tx_mmforum_pi1.']);
+    #$content = $this->displayComments->getCommentsList();
+
 		$content='
 			<strong>This is a few paragraphs:</strong><br />
 			<p>This is line 1</p>
@@ -101,162 +116,26 @@ class tx_mmforumcomments_pi1 extends tslib_pibase {
 
 		return $this->pi_wrapInBaseClass($content);
 	}
-
-/**
- * Creates a new commenting topic.
- * This method uses the mm_forum postfactory
- * interface in order to create the new topic.
- *
- * @param   int     $pid:     The UID of the page the comments are shown
- * @param   array   $para:    0: The name of the parameter; 1: the unique
- *                               id (value) of the parameter
- * @param   int     $parauid: The UID (value) of the URL parameter
- * @param   int     $fid:     The UID of the forum the new topic is to be created in
- * @param   int     $aid:     The UID of the fe_user creating this topic
- * @param   string  $subject: The topic's subject
- * @param   string  $text:    The topic's first post's text
- * @param   int     $date:    The date of topic creation as unix timestamp
- * @return	void
- */
-	protected function createTopic($pid, $para, $fid, $aid, $subject, $text, $date) {
-  	$tid = $this->getPostFactory()->create_topic($fid, $aid, $subject, $text,
-            $date,
-				    dechex(ip2long(t3lib_div::getIndpEnv('REMOTE_ADDR'))), array(),
-				    0, false, false, false
-			     );
-
-    // Insert relation
-		$insertArray_page2forum = array('pid' => $pid,	'fid' => $tid,
-		                                'parameter' => $para[0],
-		                                'parameteruid' => $para[1]
-                                   );
-
-    $GLOBALS['TYPO3_DB']->exec_INSERTquery($this->relationTable, $insertArray_page2forum);
-	}
-
-  /**
-    * If a starting points are set the first one is returned, otherwise the
-    * id of the current page.    
-    *
-    * @return   integer   page uid
-    */
-	private function getPageID() {
-    if (empty($this->cObj->data['pages'])) {
-      return $GLOBALS['TSFE']->id;
-    } else {
-      $pids = explode(',', $this->cObj->data['pages']);
-      return $pids[0];
-    }
-  }
   
-  function getCommentCategory($key) {
-    return empty($this->conf['parameters.'][$key . '.']['pageCommentCategory']) ? $this->setup['plugin.']['tx_mmforumcomments_pi1.']['pageCommentCategory'] : $this->conf['parameters.'][$key . '.']['pageCommentCategory'];
-  }
-  
-  function getTopicAuthor($key) {
-    return empty($this->conf['parameters.'][$key . '.']['pageTopicAuthor']) ? $this->setup['plugin.']['tx_mmforumcomments_pi1.']['pageTopicAuthor'] : $this->conf['parameters.'][$key . '.']['pageTopicAuthor'];
-  }
-
-	/**
-	 * Returns search parameter
-	 *
-	 * @return	array / void	returns nothing if no parameters are configured in
-	 *                        TypoScipt or the parameter name and unique parameter
-	 *                        value in the linktable of the extension   	 
-	 */
-	function getParameter() {
-    if (is_array($this->conf['parameters.']) === false) {
-      return;
-    }
-
-    foreach($this->conf['parameters.'] as $key => $value) {
-      $key = substr($key, 0, strlen($key)-1);
-      $uidkey = $value['uid'];
-      $gp = t3lib_div::_GP($key);
-
-      if (!empty($gp[$uidkey])) {
-        return array($key . '->' . $uidkey, $gp[$uidkey], $key);
-      }
-    }
-  }
-
-	/**
-	 * Returns the ID of the exsting topic (or zero if none is found)
-	 *
-	 * @param	integer		$pid: ID of the page where the comments are located
-	 * @param	array 		$parameters: 0: The name of the parameter; 1: the unique
-	 *                               id (value) of the parameter 	 
-	 * @return	integer	ID of the exsting topic
-	 */
-	function getTopicID($pid, $parameters) {
-    if (intval($pid) > 0) {
-      $where = '';
-
-      if (intval($parameters[1]) > 0) {
-        $where = ' AND parameter LIKE \'' . $parameters[0] .
-                 '\' AND parameteruid = ' . $parameters[1];
-      } else {
-        $where = ' AND parameteruid = 0';
-      }
-
-      $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('fid',
-  					 $this->relationTable, 'pid=' . intval($pid) . $where,
-  					 '', '', '1');
-
-			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 1) {
-			 $topicID = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			 $topicID = intval($topicID['fid']);
-			 $GLOBALS['TYPO3_DB']->sql_free_result($res);
-
-			 return $topicID;
-			}
-    }
-
-    return 0;
-  }
-
 /**
- * Instantiates and returns the mm_forum post factory. The post factory
- * is handled as a singleton instance, i.e. it will only be instantiated
- * ONCE and then reused.
- *
- *
- * @return	tx_mmforum_postfactory		An instance of the tx_mmforum_postfactory
- *                                    class. 
- */
-	protected function getPostFactory() {
-		if(!$this->postFactory) {
-			$this->postFactory = t3lib_div::getUserObj('EXT:mm_forum/pi1/class.tx_mmforum_postfactory.php:tx_mmforum_postfactory');
-			$this->postFactory->init(array('storagePID' => $this->setup['plugin.']['tx_mmforum.']['storagePID']));
-		} return $this->postFactory;
-	}
+	*
+	* Instantiates and returns the tx_mmforumcomments_displaycomments. It is
+	* handled as a singleton instance, i.e. it will only be instantiated
+	* ONCE and then reused.
+	*
+	* @param   array $conf The configuration array of the mm_forum.
+	* @return tx_mmforumcomments_displaycomments An instance of the 
+	*                                            tx_mmforumcomments_displaycomments
+	*                                            class.
+	*
+	*/
 
-  /**
-		 *
-		 * Loads the TypoScript setup for a specific page.
-		 * This function loads the complete TypoScript setup for a specific
-		 * page -- usually the page the tt_news record is saved on. The setup
-		 * is needed in order to determine the mm_forum storage PID.
-		 * The t3lib_tsparser_ext class is used for doing this.
-		 *
-		 * @param  int $pid The page UID for which the setup is to be loaded.
-		 * @return void
-		 *
-		 */
-
-	protected function loadTSSetupForPage($pid) {
-		if(!$this->setup) {
-			$tmpl = t3lib_div::makeInstance("t3lib_tsparser_ext");
-			$tmpl->tt_track = 0;
-			$tmpl->init();
-
-			$sys_page = t3lib_div::makeInstance("t3lib_pageSelect");
-			$rootLine = $sys_page->getRootLine($pid);
-			$tmpl->runThroughTemplates($rootLine,0);
-			$tmpl->generateConfig();
-			$this->setup = $tmpl->setup;
-		}
-	}
+/*	protected function getDisplayComments($conf) {
+		if(!$this->displayComments) {
+			$this->displayComments = t3lib_div::getUserObj('EXT:mm_forum_comments/lib/class.tx_mmforumcomments_displaycomments.php:tx_mmforumcomments_displaycomments');
+			$this->displayComments->init($conf, $this->cObj);
+		} return $this->displayComments;
+	}*/
 }
 
 

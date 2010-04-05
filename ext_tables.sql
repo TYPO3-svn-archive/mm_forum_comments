@@ -8,6 +8,6 @@ CREATE TABLE tx_mmforumcomments_links (
 	parameter tinytext,
 	parameteruid int(11) DEFAULT '0' NOT NULL
 	
-	PRIMARY KEY (pid),
+	KEY parent (pid),
 	KEY tx_mmforumnews_topic (fid)
 );
