@@ -34,6 +34,35 @@ mod.web_txmmforumM1 {
 							label       = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.pageTopicAuthor.title
 							description = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.pageTopicAuthor.desc
 						}
+
+						mmforumcomments_hideFirstPost = MMFORUM_CONF_ITEM
+						mmforumcomments_hideFirstPost {
+							type = checkbox
+							label       = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.hideFirstPost.title
+							description = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.hideFirstPost.desc
+						}
+
+						mmforumcomments_postOrderingMode = MMFORUM_CONF_ITEM
+						mmforumcomments_postOrderingMode {
+						type = select
+							type.options.ASC  = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.asc
+							type.options.DESC = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.desc
+							label             = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.title
+						}
+
+						mmforumcomments_postperpage = MMFORUM_CONF_ITEM
+						mmforumcomments_postperpage {
+							type = int
+							label       = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postperpage.title
+							description = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postperpage.desc
+						}
+
+						mmforumcomments_clearCache = MMFORUM_CONF_ITEM
+						mmforumcomments_clearCache {
+							type = checkbox
+							label       = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.clearCache.title
+							description = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.clearCache.desc
+						}
 					}
 				}
 			}

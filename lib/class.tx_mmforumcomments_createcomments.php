@@ -27,8 +27,8 @@
  *
  *  
  *   37: class tx_mmforumcomments_createcomments
- *   56:     public static function createTopic($pid, $para, $fid, $aid, $subject, $text, $date, $relationTable, $forumStoragePID)
- *   80:     private static function getPostFactory($forumStoragePID)
+ *   57:     public static function createTopic($pid, $para, $fid, $aid, $subject, $text, $date, $relationTable, $forumStoragePID)
+ *   81:     private static function getPostFactory($forumStoragePID)
  *
  * TOTAL FUNCTIONS: 2
  * (This index is automatically created/updated by the extension "extdeveval")

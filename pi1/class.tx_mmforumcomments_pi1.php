@@ -26,22 +26,21 @@
  *
  *
  *
- *   51: class tx_mmforumcomments_pi1 extends tslib_pibase
- *   64:     function main($content, $conf)
- *  101:     protected function createTopic($fid, $aid)
- *  118:     function getParameter()
- *  141:     function getTopicID($id, $parameters)
- *  177:     protected function getPostFactory()
+ *   53: class tx_mmforumcomments_pi1 extends tx_mmforum_pi1
+ *   66:     function main($content, $conf)
+ *  179:     private function displayAnswerButton()
+ *  210:     private function displayTopicButton($imgpath)
+ *  239:     function pi_loadLL()
  *
- * TOTAL FUNCTIONS: 5
+ * TOTAL FUNCTIONS: 4
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
+ require_once(t3lib_extMgm::extPath('mm_forum') . 'pi1/class.tx_mmforum_pi1.php');
 
-require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_div.php');
-require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
+ require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_div.php');
+ require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
 
 
 /**
@@ -51,7 +50,7 @@ require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcom
  * @package	TYPO3
  * @subpackage	tx_mmforumcomments
  */
-class tx_mmforumcomments_pi1 extends tslib_pibase {
+class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 	var $prefixId      = 'tx_mmforumcomments_pi1';		// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_mmforumcomments_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey        = 'mm_forum_comments';	// The extension key.
@@ -65,27 +64,30 @@ class tx_mmforumcomments_pi1 extends tslib_pibase {
 	 * @return	The		content that is displayed on the website
 	 */
 	function main($content, $conf) {
-		$this->conf = $conf;
 		$this->pi_setPiVarDefaults();
-		$this->pi_loadLL();
-		
+
 		$relationTable = 'tx_mmforumcomments_links';
 		$pid = tx_mmforumcomments_div::getPageID();
 
   	$setup = tx_mmforumcomments_div::loadTSSetupForPage($pid);
-		$parameters = tx_mmforumcomments_div::getParameter($this->conf['parameters.']);
+		$parameters = tx_mmforumcomments_div::getParameter($conf['parameters.']);
 
-		$topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters, $relationTable);
+		$data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf);
 
-    if ($topicID == 0) { //create new topic
-      $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $this->conf);
+		if (!empty($conf['parameters.'][$parameters[2] . '.']['recordsTable'])) {
+      $pid = $data['pid'];
+    }
 
-  		$commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $this->conf);
-  		$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $this->conf);
-  		$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $this->conf, $data);
-  		$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $this->conf, $data);
-  		$link = tx_mmforumcomments_div::getTSparsedString('linktopage', $parameters[2], $this->conf, $data);
-  		$date = tx_mmforumcomments_div::getDate($parameters[2], $this->conf, $data);
+    $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters, $relationTable);
+
+    /* Create new topic, if needed */
+    if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {
+      $commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $conf);
+  		$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $conf);
+  		$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $conf, $data);
+  		$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $conf, $data);
+  		$link = tx_mmforumcomments_div::getTSparsedString('linktopage', $parameters[2], $conf, $data);
+  		$date = tx_mmforumcomments_div::getDate($parameters[2], $conf, $data);
 
       tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
               $commcat, $commaut,
@@ -97,45 +99,179 @@ class tx_mmforumcomments_pi1 extends tslib_pibase {
       $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters, $relationTable);
     }
 
-    #$this->getDisplayComments($setup['plugin.']['tx_mmforum_pi1.']);
-    #$content = $this->displayComments->getCommentsList();
+    /* Return nothing if no topic is found. */
+    if ($topicID == 0) {
+      return $content;
+    }
 
-		$content='
-			<strong>This is a few paragraphs:</strong><br />
-			<p>This is line 1</p>
-			<p>This is line 2</p>
+		/* Initialize mm_forum base object */
+		$this->init($setup['plugin.']['tx_mmforum_pi1.']);
+	  $this->pi_loadLL();
+    $this->prefixId = 'tx_mmforum_pi1'; //prefix ID for button creation
+  	$this->fid = $this->conf['pid_forum']; //forum page id for button creation
+	  if (intval($conf['postPerPage']) > 0) $this->conf['post_limit'] = $conf['postPerPage'];
 
-			<h3>This is a form:</h3>
-			<form action="'.$this->pi_getPageLink($GLOBALS['TSFE']->id).'" method="POST">
-				<input type="text" name="'.$this->prefixId.'[input_field]" value="'.htmlspecialchars($this->piVars['input_field']).'">
-				<input type="submit" name="'.$this->prefixId.'[submit_button]" value="'.htmlspecialchars($this->pi_getLL('submit_button_label')).'">
-			</form>
-			<br />
-			<p>You can click here to '.$this->pi_linkToPage('get to this page again',$GLOBALS['TSFE']->id).'</p>
-		';
+		/* Show comments */
+    if ($conf['hideFirstPost']) {
+		  $this->firstPostID = tx_mmforumcomments_div::getFirstTopicPostID($topicID, $this->conf['storagePID']);
+    }
+
+    if ($hasComments = (tx_mmforumcomments_div::getFirstTopicPostToShowID($topicID, $this->conf['storagePID'], $this->firstPostID) > 0)) {
+		  $this->piVars['tid'] = $topicID; //topic id for list_post
+  		//use template with posttable only (no topic title, pagebrowser etc.):
+      $this->conf['LIST_POSTS_BEGIN'] = '###LIST_POSTS_BEGIN_MINIMAL###';
+      $this->conf['LIST_POSTS_END'] = '###LIST_POSTS_END_MINIMAL###';
+      $content = tx_mmforum_postfunctions::list_post($content, $this->conf,
+                                                     $conf['postOrderingMode']);
+    } else {
+      $content .= $this->cObj->stdWrap($this->pi_getLL('nocomments') .
+                  (intval($GLOBALS['TSFE']->fe_user->user['uid']) == 0 ? '<br />' . $this->pi_getLL('noLogin') : ''),
+                  $conf['template.']['noCommentsWrap.']);
+    }
+
+    $template = $this->cObj->fileResource($conf['template.']['file']);
+
+		if ($hasComments) {
+      $topic_replies = intval($this->local_cObj->data['topic_replies']);
+
+      if (!$conf['hideFirstPost']) {
+        $topic_replies++;
+      }
+
+      //Show comment numbers only if reasonable
+  		$markers['###LINKTOTOPIC###'] = $this->displayTopicButton($conf['template.']['path_img']);
+
+      if ($topic_replies > 1) {
+        $markers['###TOPIC_REPLIES###'] = $topic_replies;
+        $markers['###LABEL_SHOWN_COMMENTS###'] = $this->pi_getLL('showncomments');
+        $markers['###LABEL_COMMENTS###'] = $this->pi_getLL('comments');
+  		} else {
+        $markers['###TOPIC_REPLIES###'] = '';
+        $markers['###LABEL_SHOWN_COMMENTS###'] = '';
+        $markers['###LABEL_COMMENTS###'] = '';
+      }
+
+      if ($topic_replies > intval($this->conf['post_limit'])) {
+        $markers['###LABEL_TOPIC_REPLIES###'] = $this->pi_getLL('topicreplies');
+        $markers['###SHOWN_COMMENTS###'] = $this->conf['post_limit'];
+  		} else {
+        $markers['###LABEL_TOPIC_REPLIES###'] = '';
+        $markers['###SHOWN_COMMENTS###'] = '';
+      }
+    } else {
+      $markers = array(
+  					'###LINKTOTOPIC###'          => '',
+  					'###LABEL_TOPIC_REPLIES###'  => '',
+  					'###TOPIC_REPLIES###'        => '',
+  					'###LABEL_SHOWN_COMMENTS###' => '',
+  					'###SHOWN_COMMENTS###'       => '',
+  					'###LABEL_COMMENTS###'       => '',
+  				);
+    }
+
+    $markers['###HEADLINE###'] = $this->cObj->stdWrap($this->pi_getLL('title'), $conf['template.']['headlineWrap.']);
+  	$markers['###COMMENTS###'] = $content;
+  	$markers['###ANSWERBUTTON###'] = $this->displayAnswerButton($topicID);
+
+    $content = $this->cObj->substituteMarkerArray($template, $markers);
 
 		return $this->pi_wrapInBaseClass($content);
 	}
-  
-/**
-	*
-	* Instantiates and returns the tx_mmforumcomments_displaycomments. It is
-	* handled as a singleton instance, i.e. it will only be instantiated
-	* ONCE and then reused.
-	*
-	* @param   array $conf The configuration array of the mm_forum.
-	* @return tx_mmforumcomments_displaycomments An instance of the 
-	*                                            tx_mmforumcomments_displaycomments
-	*                                            class.
-	*
-	*/
+	
+	private function newTopicCreationAllowed($key, $conf) {
+	 $bool = isset($conf['parameters.'][$key . '.']['createNewTopics']) ? $conf['parameters.'][$key . '.']['createNewTopics'] : $conf['createNewTopics'];
 
-/*	protected function getDisplayComments($conf) {
-		if(!$this->displayComments) {
-			$this->displayComments = t3lib_div::getUserObj('EXT:mm_forum_comments/lib/class.tx_mmforumcomments_displaycomments.php:tx_mmforumcomments_displaycomments');
-			$this->displayComments->init($conf, $this->cObj);
-		} return $this->displayComments;
-	}*/
+   if($bool === true || $bool === false || $bool === null) {
+    return true; //return true if $bool isn't set in TypoScript
+   } else {
+    return (bool)$bool;
+   }
+	}
+
+/**
+ * Creates an answer link
+ *
+ * @return	string		The HTML-Code
+ */
+	private function displayAnswerButton($topicID='') {
+    $topicData = $this->local_cObj->data;
+
+    if(empty($topicData)) {
+      if (intval($topicID) === 0) return;
+      $topicData = $this->getTopicData($topicID);
+    }
+
+    if ((!$topicData['read_flag'] && !$topicData['closed_flag']) || $this->getIsMod($topicData['forum_id']) || $this->getIsAdmin()) {
+			if ($this->getMayWrite_topic($topicData['uid'])) {
+				$linkParams[$this->prefixId] = array(
+					'action' => 'new_post',
+					'tid'    => $topicData['uid']
+				);
+				if ($this->useRealUrl()) {
+					$linkParams[$this->prefixId]['fid'] = $topicData['forum_id'];
+				}
+				$btn = $this->createButton('reply', $linkParams);
+			} else {
+				$btn = '';
+			}
+		} else {
+			$btn = $this->pi_getLL('topic.adminsOnly');
+		}
+
+		return $btn;
+  }
+
+/**
+ * Creates a button that links to the last post of the topic
+ * using mm_forum->createButton
+ *
+ * @param	string		$imgpath: path to the image (except of buttons/icons/)
+ * @return	string		The HTML-Code
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
+	private function displayTopicButton($imgpath) {
+		$linkParams['tx_mmforum_pi1'] = array (
+			'action' => 'list_post',
+				 'tid' => $this->local_cObj->data['uid'],
+				 'pid' => 'last'
+    );
+
+		if ($this->useRealUrl()) {
+		  $linkParams[$this->prefixId]['fid'] = $this->local_cObj->data['forum_id'];
+		}
+
+    //change image path temporarily
+    $tmpimgpath = $this->conf['path_img'];
+    $this->conf['path_img'] = $imgpath;
+
+    $btn = $this->createButton('gotoForum', $linkParams, $pid);
+
+    $this->conf['path_img'] = $tmpimgpath;
+
+    return $btn;
+  }
+
+/**
+ * Overwrites pi_loadLL and merges the locallang.xml files
+ * of mm_forum_comments and mm_forum for the choosen and alternative language
+ *
+ * @return	void
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
+  function pi_loadLL()	{
+    parent::pi_loadLL();
+
+ 		if (!$this->LLalreadyLoaded) {
+ 		  $this->LLalreadyLoaded = true;
+   		$LOCAL_LANG = t3lib_div::readLLfile(t3lib_extMgm::extPath('mm_forum').'pi1/locallang.xml', $this->LLkey);
+   		$this->LOCAL_LANG = array_merge_recursive($LOCAL_LANG,is_array($this->LOCAL_LANG) ? $this->LOCAL_LANG : array());
+
+   		if ($this->altLLkey) {
+   			$LOCAL_LANG = t3lib_div::readLLfile($basePath,$this->altLLkey);
+   			$this->LOCAL_LANG=array_merge_recursive($LOCAL_LANG,is_array($this->LOCAL_LANG) ? $this->LOCAL_LANG : array());
+  		}
+    }
+  }
 }
 
 

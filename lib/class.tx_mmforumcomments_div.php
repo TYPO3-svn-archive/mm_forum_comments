@@ -26,19 +26,26 @@
  *
  * Hint: use extdeveval to insert/update function index above.*
  *
- *   45: class tx_mmforumcomments_div
- *   56:     public static function loadTSSetupForPage($pid)
- *   77:     private static function getSingle($data, $tsObjectKey, $tsObjectConf)
- *   93:     public static function getTSparsedString($tskey, $key, $conf, $data)
- *  107:     public function getPageID()
- *  123:     public static function getCommentCategoryUID($key, $conf)
- *  134:     public static function getTopicAuthorUID($key, $conf)
- *  146:     public static function getDate($key, $conf, &$data)
- *  160:     public static function getTypoScriptData($key, $uid, $conf)
- *  194:     public static function getParameter($paraconf)
- *  220:     public static function getTopicID($pid, $parameters, $relationTable)
+ *   52: class tx_mmforumcomments_div
+ *   63:     public static function loadTSSetupForPage($pid)
+ *   84:     private static function getSingle($data, $tsObjectKey, $tsObjectConf)
+ *  101:     public static function getTSparsedString($tskey, $key, $conf, $data)
+ *  116:     public static function prepareString($str)
+ *  144:     public static function prepareURL($url)
+ *  175:     public function getPageID()
+ *  192:     public static function getCommentCategoryUID($key, $conf)
+ *  204:     public static function getTopicAuthorUID($key, $conf)
+ *  217:     public static function getDate($key, $conf, &$data)
+ *  232:     public static function getTypoScriptData($key, $uid, $conf)
+ *  267:     public static function getParameter($paraconf)
+ *  291:     public static function getCommentPID($tid, $relationTable)
+ *  317:     public static function getTopicID($pid, $parameters, $relationTable)
+ *  352:     public static function getFirstTopicPostID($topicId, $storagePID)
+ *  375:     public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0)
+ *  401:     public static function clearPageCache($pid)
+ *  414:     public static function getInstallToolSettings()
  *
- * TOTAL FUNCTIONS: 10
+ * TOTAL FUNCTIONS: 17
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -76,11 +83,27 @@
 	 * @param array $tsObjectConf TS object configuration
 	 * @return string
 	 */
-	private static function getSingle($data, $tsObjectKey, $tsObjectConf) {
-		$cObj = t3lib_div::makeInstance('tslib_cObj');
-		$cObj->data = $data;
+	private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf) {
+    $ret = '';
 
-		return $cObj->cObjGetSingle($tsObjectConf[$tsObjectKey], $tsObjectConf[$tsObjectKey . '.']);
+	  if ($GLOBALS['TSFE'] === null) {
+	   //parse TypoScript by yourself if you work from the backend
+     require_once(t3lib_extMgm::extPath('mm_forum_comments') . 'lib/class.tx_mmforumcomments_typoscript.php');
+
+	   foreach (array_keys($tsObjectConf[$tsObjectKey . '.']) as $key) {
+	    // work only with TEXT objects
+      if ((strstr($key, '.') && is_array($tsarr = $tsObjectConf[$tsObjectKey . '.'][$key]) && strtoupper($tsObjectConf[$tsObjectKey . '.'][str_replace('.','',$key)]) === 'TEXT') && (tx_mmforumcomments_typoscript::returnResultOfTSif($data, $tsarr))) {
+        $ret .= tx_mmforumcomments_typoscript::getTSvalueOfTEXT($data, $tsarr);
+      }
+     }
+
+    } else {
+  		$cObj = t3lib_div::makeInstance('tslib_cObj');
+  		$cObj->data = $data;
+  		$ret = $cObj->cObjGetSingle($tsObjectConf[$tsObjectKey], $tsObjectConf[$tsObjectKey . '.']);
+    }
+
+		return $ret;
 	}
 
 /**
@@ -272,6 +295,30 @@
         return array($key . '->' . $uidkey, $gp[$uidkey], $key);
       }
     }
+
+    return array();
+  }
+
+	/**
+	 * Returns the page ID of the comment page
+	 *
+   * @author  Hauke Hain <hhpreuss@googlemail.com>
+	 * @param	  integer		$tid: ID of the exsting topic
+	 * @return	integer	  page ID
+	 */
+	public static function getCommentPID($tid, $relationTable) {
+	  $PID = 0;
+    $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('pid',
+  				 $relationTable, 'fid=' . intval($tid),
+  				 '', '', '1');
+
+		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 1) {
+		  $PID = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+			$PID = intval($PID['pid']);
+			$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		}
+
+    return $PID;
   }
 
 	/**
@@ -309,6 +356,92 @@
     }
 
     return 0;
+  }
+
+	/**
+	 * Returns the ID of the first topicpost (or zero if none is found)
+	 *
+   * @author  Hauke Hain <hhpreuss@googlemail.com>
+	 * @param	integer		$topicId: ID of the topic
+	 * @param	array 		$storagePID: ID of the page where the forendata is located
+	 * @return	integer	ID of the first topicpost
+	 */
+	public static function getFirstTopicPostID($topicId, $storagePID) {
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+  		'topic_first_post_id',
+  		'tx_mmforum_topics',
+  		'deleted = 0 AND hidden = 0 AND uid = ' . intval($topicId) . ' AND pid = ' . intval($storagePID),
+  		'', '', '1' );
+
+		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+
+		return intval($row['topic_first_post_id']);
+  }
+
+	/**
+	 * Returns the ID of the first topicpost which is shown on the page
+	 * (or zero if none is found)
+	 *
+   * @author  Hauke Hain <hhpreuss@googlemail.com>
+	 * @param	integer		$topicId: ID of the topic
+	 * @param	array 		$storagePID: ID of the page where the forendata is located
+	 * @param	integer		$excludePostID: ID of the post that should be ignored
+	 * @return	integer	ID of the first shown topicpost
+	 */
+	public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0) {
+	  $where = '';
+
+    if (intval($excludePostID) > 0) {
+      $where = ' AND uid <> ' . intval($excludePostID);
+    }
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'uid',
+			'tx_mmforum_posts',
+			'deleted = 0 AND hidden = 0 AND topic_id = ' . intval($topicId) .
+      ' AND pid = ' . intval($storagePID) .	$where
+		);
+
+		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+
+		return intval($row['uid']);
+  }
+
+	/**
+    * Clears the cache of a specific page
+    *
+    * @param   integer     $pid: ID of the page
+    * @return   void
+    */
+  public static function clearPageCache($pid) {
+    if (intval($pid) > 0) {
+      $TCE = t3lib_div::makeInstance('t3lib_TCEmain');
+      $TCE->admin = 1;
+      $TCE->clear_cacheCmd($pid);
+    }
+  }
+
+	/**
+    * Loads the tx_mmforum_config.ts (default values of the mm_forum install
+    * tool)
+    *
+    * @return   array      parsed TypoScript setup
+    */
+  public static function getInstallToolSettings() {
+		$filename = str_replace('ext/mm_forum_comments/', 'tx_mmforum_config.ts',
+                            t3lib_extMgm::extPath('mm_forum_comments'));
+		$ret = array();
+
+		if(file_exists($filename)) {
+      $conf = file_get_contents($filename);
+      $parser  = new t3lib_TSparser();
+  		$parser->parse($conf);
+  		$ret = $parser->setup['plugin.']['tx_mmforum.'];
+    }
+
+		return $ret;
   }
 }
 

@@ -4,7 +4,6 @@ if (!defined ('TYPO3_MODE')) {
 }
 
 t3lib_extMgm::addStaticFile($_EXTKEY, 'res/ts/static', 'mm_forum_comments');
-t3lib_extMgm::addStaticFile($_EXTKEY, 'res/ts/static/news', 'Settings for tt_news');
 
 t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
