@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_mmforumcomments_pi1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+      <label index="title">Latest comments</label>
+      <label index="noLogin">Please log in or sign up to write a comment.</label>
+      <label index="nocomments">There are no comments available. Be the first one who writes a comment.</label>
+      <label index="button-gotoForum">Go to page with all comments</label>
+      <label index="showncomments">Show</label>
+      <label index="topicreplies">of</label>
+      <label index="comments">comments</label>
+		</languageKey>
+        
+    <!-- GERMAN LANGUAGE DATA -->
+    <languageKey index="de" type="array">
+      <label index="title">Die letzten Kommentare</label>
+      <label index="noLogin">Bitte melde dich an oder registiere dich, um Kommentare abzugeben.</label>
+      <label index="nocomments">Bisher wurden keine Kommentare abgegeben. Schreibe jetzt dein Kommentar!</label>
+      <label index="button-gotoForum">Gehe zur Seite mit allen Kommentaren</label>
+      <label index="showncomments">Zeige</label>
+      <label index="topicreplies">von</label>
+      <label index="comments">Kommentaren</label>
+	  </languageKey>
+	</data>
+</T3locallang>

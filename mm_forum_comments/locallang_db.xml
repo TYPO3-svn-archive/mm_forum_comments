@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'mm_forum_comments'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tt_content.list_type_pi1">mm_forum_comments</label>
+			<label index="tx_mmforumcomments_links">mm_forum_comments : Link</label>
+			<label index="tx_mmforumcomments_links.fid">forum id</label>
+			<label index="tx_mmforumcomments_links.parameter">page parameter</label>
+			<label index="tx_mmforumcomments_links.parameteruid">page parameter value (uid, integer)</label>
+		</languageKey>
+	</data>
+</T3locallang>

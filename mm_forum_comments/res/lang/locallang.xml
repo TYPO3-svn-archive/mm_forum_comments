@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+    <meta type="array">
+        <description></description>
+        <type></type>
+        <csh_table></csh_table>
+        <labelContext type="array">
+        </labelContext>
+    </meta>
+    <data type="array">
+        <!-- ENGLISH LANGUAGE DATA -->
+        <languageKey index="default" type="array">
+            <label index="mod.category_title_short">Comments</label>
+            <label index="mod.category_title">Page comments</label>
+
+      			<label index="mod.pageCommentCategory.title">Page comment forum</label>
+      			<label index="mod.pageCommentCategory.desc">The forum that is to be used for page comments.</label>
+      			<label index="mod.pageTopicAuthor.title">Topic author</label>
+      			<label index="mod.pageTopicAuthor.desc">This user will be used as author for new comment topics.</label>
+      			<label index="mod.hideFirstPost.title">Hide first post</label>
+      			<label index="mod.hideFirstPost.desc">Hide the first post of the topic which is created by this mm_forum_comments.</label>
+      			<label index="mod.postOrderingMode.title">Post ordermode</label>
+      			<label index="mod.postOrderingMode.asc">ascending</label>
+      			<label index="mod.postOrderingMode.desc">descending</label>
+      			<label index="mod.postperpage.title">Post per page</label>
+      			<label index="mod.postperpage.desc">Number of post that are shown per page</label>
+      			<label index="mod.clearCache.title">Clear Cache?</label>
+      			<label index="mod.clearCache.desc">Clear the cache of the page with the mm_forum_comments plugin after creating a new post?</label>
+        </languageKey>
+		<!-- GERMAN LANGUAGE DATA -->
+        <languageKey index="de" type="array">
+            <label index="mod.category_title_short">Kommentare</label>
+            <label index="mod.category_title">Seiten-Kommentare</label>
+
+      			<label index="mod.pageCommentCategory.title">Forum für Seiten-Kommentare</label>
+      			<label index="mod.pageCommentCategory.desc">Dieses Forum wird für Seiten-Kommentare verwendet.</label>
+      			<label index="mod.pageTopicAuthor.title">Themen-Verfasser</label>
+      			<label index="mod.pageTopicAuthor.desc">Dieser Benutzer wird als Verfasser für neue Kommentar-Themen verwendet.</label>
+      			<label index="mod.doNOTshowFirstPost.title">Verstecke den ersten Beitrag</label>
+      			<label index="mod.doNOTshowFirstPost.desc">Den ersten Beitrag des Themas, der von dieser Extension erzeugt wird, verstecken.</label>
+      			<label index="mod.postOrderingMode.title">Beitragssortierung</label>
+      			<label index="mod.postOrderingMode.asc">aufsteigend</label>
+      			<label index="mod.postOrderingMode.desc">absteigend</label>
+      			<label index="mod.postperpage.title">Beiträge pro Seite</label>
+      			<label index="mod.postperpage.desc">Anzahl der Beiträge die pro Seite angezeigt werden.</label>
+      			<label index="mod.clearCache.title">Seitencache löschen?</label>
+      			<label index="mod.clearCache.desc">Soll der Cache nach Abgabe eines neuen Kommentars von der Kommentarseite geleert werden, damit die Seite aktuell bleibt (sofern das Plugin sowieso nicht gecached wird)?</label>
+        </languageKey>
+    </data>
+</T3locallang>
