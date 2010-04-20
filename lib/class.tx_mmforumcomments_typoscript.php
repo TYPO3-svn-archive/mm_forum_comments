@@ -123,7 +123,7 @@
       }
     }
 
-    return empty($linktitle) ? '[URL]record:' . $record . ':' . $url . '[/URL]' : '[URL=record:' . $record . ':' . $url . ']' . $linktitle . '[/URL]';
+    return empty($linktitle) ? '[URL]record:' . $record . ':' . $url . '[/URL]' : '[URL="record:' . $record . ':' . $url . '"]' . $linktitle . '[/URL]';
   }
   
   public static function wrap($content, $wrap, $char='|') {

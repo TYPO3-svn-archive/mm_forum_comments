@@ -143,7 +143,7 @@
       {
     		$url = tx_mmforumcomments_div::prepareURL($output[2][$i]);
     		$linkname = $output[4][$i];
-    		$replacement = '[URL=' . $url . ']' . $linkname . '[/URL]';
+    		$replacement = '[URL="' . $url . '"]' . $linkname . '[/URL]';
     		$str = str_replace($output[0][$i], $replacement, $str);
       }
     }

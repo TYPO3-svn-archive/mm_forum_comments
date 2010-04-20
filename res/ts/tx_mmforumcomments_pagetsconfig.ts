@@ -45,8 +45,8 @@ mod.web_txmmforumM1 {
 						mmforumcomments_postOrderingMode = MMFORUM_CONF_ITEM
 						mmforumcomments_postOrderingMode {
 						type = select
-							type.options.ASC  = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.asc
 							type.options.DESC = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.desc
+							type.options.ASC  = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.asc
 							label             = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.title
 						}
 
