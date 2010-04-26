@@ -41,6 +41,6 @@ plugin.tx_mmforumcomments_pi1 {
     file = EXT:mm_forum_comments/res/tmpl/comments.html
     headlineWrap.wrap = <h2>|</h2>
     noCommentsWrap.wrap = <p>|</p>
-    path_img = EXT:mm_forum_comments/res/img/
+    commentButtonPath_img = EXT:mm_forum_comments/res/img/
   }
 }

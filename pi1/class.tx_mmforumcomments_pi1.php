@@ -29,7 +29,7 @@
  *   53: class tx_mmforumcomments_pi1 extends tx_mmforum_pi1
  *   66:     function main($content, $conf)
  *  179:     private function displayAnswerButton()
- *  210:     private function displayTopicButton($imgpath)
+ *  210:     private function displayTopicButton($imgpath, $buttonWrap)
  *  239:     function pi_loadLL()
  *
  * TOTAL FUNCTIONS: 4
@@ -139,12 +139,16 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
       }
 
       //Show comment numbers only if reasonable
-  		$markers['###LINKTOTOPIC###'] = $this->displayTopicButton($conf['template.']['path_img']);
+  		$markers['###LINKTOTOPIC###'] = $this->displayTopicButton($conf['template.']['commentButtonPath_img'], $conf['template.']['commentButtonNormalStdWrap.']['wrap']);
 
       if ($topic_replies > 1) {
         $markers['###TOPIC_REPLIES###'] = $topic_replies;
         $markers['###LABEL_SHOWN_COMMENTS###'] = $this->pi_getLL('showncomments');
         $markers['###LABEL_COMMENTS###'] = $this->pi_getLL('comments');
+
+        if ($this->conf['post_limit'] > $topic_replies) {
+          $markers['###LABEL_COMMENTS###'] = $this->pi_getLL('commentsSingle');
+        }
   		} else {
         $markers['###TOPIC_REPLIES###'] = '';
         $markers['###LABEL_SHOWN_COMMENTS###'] = '';
@@ -170,7 +174,7 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
     }
 
     $markers['###HEADLINE###'] = $this->cObj->stdWrap($this->pi_getLL('title'), $conf['template.']['headlineWrap.']);
-  	$markers['###COMMENTS###'] = $content;
+  	$markers['###COMMENTS###'] = $this->cObj->stdWrap($content, $conf['template.']['commentsWrap.']);
   	$markers['###ANSWERBUTTON###'] = $this->displayAnswerButton($topicID);
 
     $content = $this->cObj->substituteMarkerArray($template, $markers);
@@ -226,10 +230,11 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
  * using mm_forum->createButton
  *
  * @param	string		$imgpath: path to the image (except of buttons/icons/)
+ * @param	string		$buttonWrap: wrap for buttons
  * @return	string		The HTML-Code
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-	private function displayTopicButton($imgpath) {
+	private function displayTopicButton($imgpath, $buttonWrap) {
 		$linkParams['tx_mmforum_pi1'] = array (
 			'action' => 'list_post',
 				 'tid' => $this->local_cObj->data['uid'],
@@ -240,13 +245,22 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 		  $linkParams[$this->prefixId]['fid'] = $this->local_cObj->data['forum_id'];
 		}
 
-    //change image path temporarily
+    //change image setup temporarily
     $tmpimgpath = $this->conf['path_img'];
+    $tmpButtonWrap = $this->conf['buttons.']['normal.']['stdWrap.']['wrap'];
+    $imgconf = $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import']; 
     $this->conf['path_img'] = $imgpath;
+    $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgpath . 'default/buttons/icons/';
+
+    if (!empty($buttonWrap)) {
+      $this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $buttonWrap;
+    }
 
     $btn = $this->createButton('gotoForum', $linkParams, $pid);
 
     $this->conf['path_img'] = $tmpimgpath;
+    $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgconf;
+    $this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $tmpButtonWrap;
 
     return $btn;
   }

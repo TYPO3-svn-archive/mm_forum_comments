@@ -13,6 +13,7 @@
       <label index="showncomments">Show</label>
       <label index="topicreplies">of</label>
       <label index="comments">comments</label>
+      <label index="commentsSingle">comments</label>
 		</languageKey>
         
     <!-- GERMAN LANGUAGE DATA -->
@@ -24,6 +25,7 @@
       <label index="showncomments">Zeige</label>
       <label index="topicreplies">von</label>
       <label index="comments">Kommentaren</label>
+      <label index="commentsSingle">Kommentare</label>
 	  </languageKey>
 	</data>
 </T3locallang>

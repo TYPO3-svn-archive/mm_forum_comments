@@ -1,3 +1,12 @@
+2010-04-26 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* Added translation possibility for "comments"
+	* Wrap for comments part (###COMMENTS###) that actually has got comments:
+	  plugin.tx_mmforumcomments_pi1.template.commentsWrap.wrap = |
+	* Renamed TypoScript configuration path_img to commentButtonPath_img
+	* Added possibility to change the stdWrap.wrap of the ###LINKTOTOPIC### button
+	 	plugin.tx_mmforumcomments_pi1.template.commentButtonNormalStdWrap.wrap = |
+	
 2010-04-20 Hauke Hain  <hhpreuss@googlemail.com>
 
-	* initial release
+	* initial release  	
