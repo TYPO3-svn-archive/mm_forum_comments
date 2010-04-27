@@ -123,6 +123,7 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
       $this->conf['LIST_POSTS_END'] = '###LIST_POSTS_END_MINIMAL###';
       $content = tx_mmforum_postfunctions::list_post($content, $this->conf,
                                                      $conf['postOrderingMode']);
+      $content = $this->cObj->stdWrap($content, $conf['template.']['commentsWrap.']);
     } else {
       $content .= $this->cObj->stdWrap($this->pi_getLL('nocomments') .
                   (intval($GLOBALS['TSFE']->fe_user->user['uid']) == 0 ? '<br />' . $this->pi_getLL('noLogin') : ''),
@@ -174,8 +175,9 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
     }
 
     $markers['###HEADLINE###'] = $this->cObj->stdWrap($this->pi_getLL('title'), $conf['template.']['headlineWrap.']);
-  	$markers['###COMMENTS###'] = $this->cObj->stdWrap($content, $conf['template.']['commentsWrap.']);
+  	$markers['###COMMENTS###'] = $content;
   	$markers['###ANSWERBUTTON###'] = $this->displayAnswerButton($topicID);
+  	$markers['###NOCOMMENTSSTYLE###'] = $conf['template.']['noCommentsStyle'];
 
     $content = $this->cObj->substituteMarkerArray($template, $markers);
 
@@ -248,9 +250,12 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
     //change image setup temporarily
     $tmpimgpath = $this->conf['path_img'];
     $tmpButtonWrap = $this->conf['buttons.']['normal.']['stdWrap.']['wrap'];
-    $imgconf = $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import']; 
-    $this->conf['path_img'] = $imgpath;
-    $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgpath . 'default/buttons/icons/';
+
+    if (!empty($imgpath)) {
+      $imgconf = $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import']; 
+      $this->conf['path_img'] = $imgpath;
+      $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgpath . 'default/buttons/icons/';
+    }
 
     if (!empty($buttonWrap)) {
       $this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $buttonWrap;
@@ -258,9 +263,11 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 
     $btn = $this->createButton('gotoForum', $linkParams, $pid);
 
-    $this->conf['path_img'] = $tmpimgpath;
-    $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgconf;
-    $this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $tmpButtonWrap;
+    if (!empty($imgpath)) {
+      $this->conf['path_img'] = $tmpimgpath;
+      $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgconf;
+      $this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $tmpButtonWrap;
+    }
 
     return $btn;
   }

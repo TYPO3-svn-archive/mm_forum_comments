@@ -42,5 +42,6 @@ plugin.tx_mmforumcomments_pi1 {
     headlineWrap.wrap = <h2>|</h2>
     noCommentsWrap.wrap = <p>|</p>
     commentButtonPath_img = EXT:mm_forum_comments/res/img/
+    noCommentsStyle = style="display:none;"
   }
 }
