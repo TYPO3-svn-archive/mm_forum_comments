@@ -26,13 +26,14 @@
  *
  *
  *
- *   53: class tx_mmforumcomments_pi1 extends tx_mmforum_pi1
- *   66:     function main($content, $conf)
- *  179:     private function displayAnswerButton()
- *  210:     private function displayTopicButton($imgpath, $buttonWrap)
- *  239:     function pi_loadLL()
+ *   54: class tx_mmforumcomments_pi1 extends tx_mmforum_pi1
+ *   67:     function main($content, $conf)
+ *  193:     private function newTopicCreationAllowed($key, $conf)
+ *  209:     private function displayAnswerButton($topicID='')
+ *  245:     private function displayTopicButton($imgpath)
+ *  274:     function pi_loadLL()
  *
- * TOTAL FUNCTIONS: 4
+ * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -72,9 +73,9 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
   	$setup = tx_mmforumcomments_div::loadTSSetupForPage($pid);
 		$parameters = tx_mmforumcomments_div::getParameter($conf['parameters.']);
 
-		$data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf);
-
 		if (!empty($conf['parameters.'][$parameters[2] . '.']['recordsTable'])) {
+		  //do not use hooks, because of performance (I only need the page id)
+		  $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $this, false);
       $pid = $data['pid'];
     }
 
@@ -82,6 +83,10 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 
     /* Create new topic, if needed */
     if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {
+      if (!(is_array($data)) || is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'])) {
+        $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $this);
+      }
+
       $commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $conf);
   		$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $conf);
   		$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $conf, $data);
@@ -183,7 +188,14 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 
 		return $this->pi_wrapInBaseClass($content);
 	}
-	
+
+	/**
+	 * Checks if fe plugin is allowed to create a new topic
+	 *
+	 * @param	string		$key: parameter key of the post vars
+	 * @param	array  		$conf: plugin TypoScript setup
+	 * @return	boolean	returns fals if topic creation is forbidden by TypoScript def. 
+	 */
 	private function newTopicCreationAllowed($key, $conf) {
 	 $bool = isset($conf['parameters.'][$key . '.']['createNewTopics']) ? $conf['parameters.'][$key . '.']['createNewTopics'] : $conf['createNewTopics'];
 
@@ -197,6 +209,7 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 /**
  * Creates an answer link
  *
+ * @param	integer		  $topicID: UID of the mm_forum topic
  * @return	string		The HTML-Code
  */
 	private function displayAnswerButton($topicID='') {

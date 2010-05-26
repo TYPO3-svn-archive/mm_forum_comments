@@ -24,26 +24,26 @@
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
- * Hint: use extdeveval to insert/update function index above.*
+ *
  *
  *   52: class tx_mmforumcomments_div
  *   63:     public static function loadTSSetupForPage($pid)
- *   84:     private static function getSingle($data, $tsObjectKey, $tsObjectConf)
- *  101:     public static function getTSparsedString($tskey, $key, $conf, $data)
- *  116:     public static function prepareString($str)
- *  144:     public static function prepareURL($url)
- *  175:     public function getPageID()
- *  192:     public static function getCommentCategoryUID($key, $conf)
- *  204:     public static function getTopicAuthorUID($key, $conf)
- *  217:     public static function getDate($key, $conf, &$data)
- *  232:     public static function getTypoScriptData($key, $uid, $conf)
- *  267:     public static function getParameter($paraconf)
- *  291:     public static function getCommentPID($tid, $relationTable)
- *  317:     public static function getTopicID($pid, $parameters, $relationTable)
- *  352:     public static function getFirstTopicPostID($topicId, $storagePID)
- *  375:     public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0)
- *  401:     public static function clearPageCache($pid)
- *  414:     public static function getInstallToolSettings()
+ *   84:     private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf)
+ *  117:     public static function getTSparsedString($tskey, $key, $conf, $data)
+ *  132:     public static function prepareString($str)
+ *  160:     public static function prepareURL($url)
+ *  191:     public function getPageID()
+ *  208:     public static function getCommentCategoryUID($key, $conf)
+ *  220:     public static function getTopicAuthorUID($key, $conf)
+ *  233:     public static function getDate($key, $conf, &$data)
+ *  250:     public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true)
+ *  301:     public static function getParameter($paraconf)
+ *  335:     public static function getCommentPID($tid, $relationTable)
+ *  361:     public static function getTopicID($pid, $parameters, $relationTable)
+ *  396:     public static function getFirstTopicPostID($topicId, $storagePID)
+ *  419:     public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0)
+ *  445:     public static function clearPageCache($pid)
+ *  459:     public static function getInstallToolSettings()
  *
  * TOTAL FUNCTIONS: 17
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -52,15 +52,13 @@
  class tx_mmforumcomments_div {
 
 /**
- *
  * Loads the TypoScript setup for a specific page.
  * This function loads the complete TypoScript setup for a specific
  * page.
  * The t3lib_tsparser_ext class is used for doing this.
  *
- * @param  int    $pid The page UID for which the setup is to be loaded.
- * @return array  TypoScript setup
- *
+ * @param	int		$pid The page UID for which the setup is to be loaded.
+ * @return	array		TypoScript setup
  */
 	public static function loadTSSetupForPage($pid) {
 			$tmpl = t3lib_div::makeInstance('t3lib_tsparser_ext');
@@ -78,10 +76,10 @@
 	/**
 	 * Parses data through typoscript.
 	 *
-	 * @param array $data Data which will be passed to the typoscript.
-	 * @param string $tsObjectKey The typoscript which will be called.
-	 * @param array $tsObjectConf TS object configuration
-	 * @return string
+	 * @param	array		$data Data which will be passed to the typoscript.
+	 * @param	string		$tsObjectKey The typoscript which will be called.
+	 * @param	array		$tsObjectConf TS object configuration
+	 * @return	string
 	 */
 	private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf) {
     $ret = '';
@@ -107,15 +105,15 @@
 	}
 
 /**
-  * Returns string created by TypoScript parser (GetSingle)
-  *
-  * @author  Hauke Hain <hhpreuss@googlemail.com>
-  * @param   string      $tskey: The TypoScript which will be called
-  * @param   string      $key: TypoScript key where to look in the parameter list
-  * @param   array       $conf: The TypoScript setup
-  * @param   array       $data: The data that is available via TypoScript
-  * @return  string      The subject of the comment thread
-  */
+ * Returns string created by TypoScript parser (GetSingle)
+ *
+ * @param	string		$tskey: The TypoScript which will be called
+ * @param	string		$key: TypoScript key where to look in the parameter list
+ * @param	array		$conf: The TypoScript setup
+ * @param	array		$data: The data that is available via TypoScript
+ * @return	string		The subject of the comment thread
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
   public static function getTSparsedString($tskey, $key, $conf, $data) {
     if (!empty($conf['parameters.'][$key . '.'][$tskey])) {
       $conf = $conf['parameters.'][$key . '.'];
@@ -125,12 +123,12 @@
   }
 
 /**
-  * Replaces &nbsps; and a-tags with BBcode equivalents
-  *
-  * @author  Hauke Hain <hhpreuss@googlemail.com>
-  * @param   string      $str: The string that gets prepared
-  * @return  string      The prepared string
-  */
+ * Replaces &nbsps; and a-tags with BBcode equivalents
+ *
+ * @param	string		$str: The string that gets prepared
+ * @return	string		The prepared string
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
   public static function prepareString($str) {
     $str = str_replace('&nbsp;', ' ', $str);
 
@@ -152,13 +150,13 @@
   }
 
 /**
-  * Returns an absolute URL instead of an relative
-  * Uses baseURL to do so or php SERVER_NAME is baseURL isn't available.
-  *
-  * @author  Hauke Hain <hhpreuss@googlemail.com>
-  * @param   string      $url: The URL that should become an absolute URL
-  * @return  string      The absolute URL
-  */
+ * Returns an absolute URL instead of an relative
+ * Uses baseURL to do so or php SERVER_NAME is baseURL isn't available.
+ *
+ * @param	string		$url: The URL that should become an absolute URL
+ * @return	string		The absolute URL
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
   public static function prepareURL($url) {
     if (strpos($url, 'http://') === false) {
       $baseURL = $GLOBALS['TSFE']->config['config']['baseURL'];
@@ -184,12 +182,12 @@
   }
 
   /**
-    * If a starting points are set the first one is returned, otherwise the
-    * id of the current page.    
-    *
-    * @author  Hauke Hain <hhpreuss@googlemail.com>
-    * @return   integer   page uid
-    */
+ * If a starting points are set the first one is returned, otherwise the
+ * id of the current page.
+ *
+ * @return	integer		page uid
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
 	public function getPageID() {
     if (empty($this->cObj->data['pages'])) {
       return $GLOBALS['TSFE']->id;
@@ -200,54 +198,56 @@
   }
 
 /**
-  * Returns the UID of the forum where the comment topic is / will be located
-  *
-  * @author  Hauke Hain <hhpreuss@googlemail.com>
-  * @param   string      $key: TypoScript key where to look in the parameter list
-  * @param   array       $conf: The TS configuration
-  * @return  string      forum UID
-  */
+ * Returns the UID of the forum where the comment topic is / will be located
+ *
+ * @param	string		$key: TypoScript key where to look in the parameter list
+ * @param	array		$conf: The TS configuration
+ * @return	string		forum UID
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
   public static function getCommentCategoryUID($key, $conf) {
     return empty($conf['parameters.'][$key . '.']['pageCommentCategory']) ? $conf['pageCommentCategory'] : $conf['parameters.'][$key . '.']['pageCommentCategory'];
   }
 
 /**
-  * Returns the UID of the comment topic author
-  *
-  * @author  Hauke Hain <hhpreuss@googlemail.com>
-  * @param   string      $key: TypoScript key where to look in the parameter list
-  * @param   array       $conf: The TS configuration
-  * @return  string      fe_user UID
-  */
+ * Returns the UID of the comment topic author
+ *
+ * @param	string		$key: TypoScript key where to look in the parameter list
+ * @param	array		$conf: The TS configuration
+ * @return	string		fe_user UID
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
   public static function getTopicAuthorUID($key, $conf) {
     return empty($conf['parameters.'][$key . '.']['pageTopicAuthor']) ? $conf['pageTopicAuthor'] : $conf['parameters.'][$key . '.']['pageTopicAuthor'];
   }
 
 /**
-  * Returns the posting date for the comment thread 
-  *
-  * @author  Hauke Hain <hhpreuss@googlemail.com>
-  * @param   string      $key: TypoScript key where to look in the parameter list
-  * @param   array       $conf: The TS configuration
-  * @param   array       $data: The data that is available via TypoScript
-  * @return  integer     Unix timestamp
-  */
+ * Returns the posting date for the comment thread
+ *
+ * @param	string		$key: TypoScript key where to look in the parameter list
+ * @param	array		$conf: The TS configuration
+ * @param	array		$data: The data that is available via TypoScript
+ * @return	integer		Unix timestamp
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
   public static function getDate($key, $conf, &$data) {
     $datecolumn = empty($conf['parameters.'][$key . '.']['postdate']) ? $conf['postdate'] : $conf['parameters.'][$key . '.']['postdate'];
-  
+
     return intval($data[$datecolumn])==0 ? time() : intval($data[$datecolumn]);
   }
 
 /**
-  * Returns the columns of a specific datarow to be available in TypoScript
-  *
-  * @author  Hauke Hain <hhpreuss@googlemail.com>
-  * @param   string      $key: TypoScript key where to look in the parameter list
-  * @param   integer     $uid: The uid of the datatable
-  * @param   array       $conf: The TS configuration
-  * @return  array       data for TypoScript
-  */
-  public static function getTypoScriptData($key, $uid, $conf) {
+ * Returns the columns of a specific datarow to be available in TypoScript
+ *
+ * @param	string		$key: TypoScript key where to look in the parameter list
+ * @param	integer		$uid: The uid of the datatable
+ * @param	array		$conf: The TS configuration
+ * @param	array		$pObj: Reference to the parent
+ * @param	boolean		$useHook: Whether to use the hook or not
+ * @return	array		data for TypoScript
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
+  public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true) {
     $recordsTable = empty($conf['parameters.'][$key . '.']['recordsTable']) ? $conf['recordsTable'] : $conf['parameters.'][$key . '.']['recordsTable'];
 
     if (empty($recordsTable)) {
@@ -266,6 +266,22 @@
 		 $data = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		 $GLOBALS['TYPO3_DB']->sql_free_result($res);
 
+      if($useHook) {
+        // hook to modify the result of the function getTypoScriptData
+    		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'])) {
+    			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'] as $userFunc) {
+    			  $params = array(
+    					'data' => &$data,
+    					'recordsTable' => &$recordsTable,
+    					'key' => &$key,
+    					'uid' => &$uid,
+    					'conf' => &$conf,
+    				);
+    				t3lib_div::callUserFunction($userFunc, $params, $pObj);
+    			}
+    		}
+      }
+
 		 return $data;
 		}
 
@@ -275,16 +291,25 @@
 	/**
 	 * Returns search parameter (WHERE clause)
 	 *
-   * @author  Hauke Hain <hhpreuss@googlemail.com>
-	 * @param	  array		$paraconf: The parameter segment of the TS plugin setup
-	 * @return	array   returns nothing if no parameters are configured in
+	 *
+	 * @param	array	$paraconf: The parameter segment of the TS plugin setup
+	 * @return array	returns nothing if no parameters are configured in
 	 *                  TypoScipt or the parameter name and unique parameter
-	 *                  value in the linktable of the extension   	 
+	 *                  value in the linktable of the extension
+	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
 	public static function getParameter($paraconf) {
     if (is_array($paraconf) === false) {
       return array();
     }
+
+    // hook to return own parameter
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['overwriteParameter'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['overwriteParameter'] as $userFunc) {
+				$return = t3lib_div::callUserFunction($userFunc, $paraconf, $this);
+			}
+			return $return;
+		}
 
     foreach($paraconf as $key => $value) {
       $key = substr($key, 0, strlen($key)-1);
@@ -302,9 +327,10 @@
 	/**
 	 * Returns the page ID of the comment page
 	 *
-   * @author  Hauke Hain <hhpreuss@googlemail.com>
-	 * @param	  integer		$tid: ID of the exsting topic
-	 * @return	integer	  page ID
+	 * @param	integer		$tid: ID of the exsting topic
+	 * @param	[type]		$relationTable: ...
+	 * @return	integer		page ID
+	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
 	public static function getCommentPID($tid, $relationTable) {
 	  $PID = 0;
@@ -324,12 +350,13 @@
 	/**
 	 * Returns the ID of the exsting topic (or zero if none is found)
 	 *
-   * @author  Hauke Hain <hhpreuss@googlemail.com>
+	 *
 	 * @param	integer		$pid: ID of the page where the comments are located
-	 * @param	array 		$parameters: 0: The name of the parameter; 1: the unique
-	 *                               id (value) of the parameter
+	 * @param	array		$parameters: 0: The name of the parameter; 1: the unique
+	 *                                id (value) of the parameter
 	 * @param	string		$relationTable: Table name
-	 * @return	integer	ID of the exsting topic
+	 * @return	integer		ID of the exsting topic
+	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
 	public static function getTopicID($pid, $parameters, $relationTable) {
     if (intval($pid) > 0) {
@@ -361,10 +388,10 @@
 	/**
 	 * Returns the ID of the first topicpost (or zero if none is found)
 	 *
-   * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 * @param	integer		$topicId: ID of the topic
-	 * @param	array 		$storagePID: ID of the page where the forendata is located
-	 * @return	integer	ID of the first topicpost
+	 * @param	array		$storagePID: ID of the page where the forendata is located
+	 * @return	integer		ID of the first topicpost
+	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
 	public static function getFirstTopicPostID($topicId, $storagePID) {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
@@ -383,11 +410,11 @@
 	 * Returns the ID of the first topicpost which is shown on the page
 	 * (or zero if none is found)
 	 *
-   * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 * @param	integer		$topicId: ID of the topic
-	 * @param	array 		$storagePID: ID of the page where the forendata is located
+	 * @param	array		$storagePID: ID of the page where the forendata is located
 	 * @param	integer		$excludePostID: ID of the post that should be ignored
-	 * @return	integer	ID of the first shown topicpost
+	 * @return	integer		ID of the first shown topicpost
+	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
 	public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0) {
 	  $where = '';
@@ -410,11 +437,11 @@
   }
 
 	/**
-    * Clears the cache of a specific page
-    *
-    * @param   integer     $pid: ID of the page
-    * @return   void
-    */
+	 * Clears the cache of a specific page
+	 *
+	 * @param	integer		$pid: ID of the page
+	 * @return	void
+	 */
   public static function clearPageCache($pid) {
     if (intval($pid) > 0) {
       $TCE = t3lib_div::makeInstance('t3lib_TCEmain');
@@ -424,11 +451,11 @@
   }
 
 	/**
-    * Loads the tx_mmforum_config.ts (default values of the mm_forum install
-    * tool)
-    *
-    * @return   array      parsed TypoScript setup
-    */
+	 * Loads the tx_mmforum_config.ts (default values of the mm_forum install
+	 * tool)
+	 *
+	 * @return	array		parsed TypoScript setup
+	 */
   public static function getInstallToolSettings() {
 		$filename = str_replace('ext/mm_forum_comments/', 'tx_mmforum_config.ts',
                             t3lib_extMgm::extPath('mm_forum_comments'));

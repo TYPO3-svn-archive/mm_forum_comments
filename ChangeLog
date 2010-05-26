@@ -1,3 +1,14 @@
+2010-05-26 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* pi1: Load TypoScriptData from database only if necessary. Do not use hook if
+	  only the pid is needed.
+
+2010-05-24 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* div: Added hooks:
+	    - getTypoScriptDataHook
+	    - overwriteParameter	
+
 2010-04-26 Hauke Hain  <hhpreuss@googlemail.com>
 
 	* Added translation possibility for "comments"
