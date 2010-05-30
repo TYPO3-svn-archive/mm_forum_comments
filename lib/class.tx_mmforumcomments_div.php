@@ -26,30 +26,68 @@
  *
  *
  *
- *   52: class tx_mmforumcomments_div
- *   63:     public static function loadTSSetupForPage($pid)
- *   84:     private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf)
- *  117:     public static function getTSparsedString($tskey, $key, $conf, $data)
- *  132:     public static function prepareString($str)
- *  160:     public static function prepareURL($url)
- *  191:     public function getPageID()
- *  208:     public static function getCommentCategoryUID($key, $conf)
- *  220:     public static function getTopicAuthorUID($key, $conf)
- *  233:     public static function getDate($key, $conf, &$data)
- *  250:     public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true)
- *  301:     public static function getParameter($paraconf)
- *  335:     public static function getCommentPID($tid, $relationTable)
- *  361:     public static function getTopicID($pid, $parameters, $relationTable)
- *  396:     public static function getFirstTopicPostID($topicId, $storagePID)
- *  419:     public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0)
- *  445:     public static function clearPageCache($pid)
- *  459:     public static function getInstallToolSettings()
+ *   53: class tx_mmforumcomments_div
+ *   66:     public static function createTopicForRecord(&$parameters, &$conf, $pid, $storagePID, &$pObj, $useTSDataHook=true)
+ *   99:     public static function loadTSSetupForPage($pid)
+ *  120:     private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf)
+ *  153:     public static function getTSparsedString($tskey, $key, $conf, $data)
+ *  168:     public static function prepareString($str)
+ *  196:     public static function prepareURL($url)
+ *  227:     public function getPageID()
+ *  244:     public static function getCommentCategoryUID($key, $conf)
+ *  256:     public static function getTopicAuthorUID($key, $conf)
+ *  269:     public static function getDate($key, $conf, &$data)
+ *  286:     public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true)
+ *  338:     public static function getParameter($paraconf)
+ *  372:     public static function getCommentPID($tid, $relationTable=false)
+ *  403:     public static function getTopicID($pid, $parameters, $relationTable=false)
+ *  442:     public static function getFirstTopicPostID($topicId, $storagePID)
+ *  465:     public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0)
+ *  491:     public static function clearPageCache($pid)
+ *  505:     public static function getInstallToolSettings()
  *
- * TOTAL FUNCTIONS: 17
+ * TOTAL FUNCTIONS: 18
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
  class tx_mmforumcomments_div {
+		/**
+ * This method uses the mm_forum postfactory interface in order to create
+ * a new topic for comments.
+ *
+ * @param	array		&$parameters The URL parameters.
+ * @param	array		&$conf The mm_forum_comments TypoScript setup.
+ * @param	integer	$pid page id for the relation table.
+ * @param	integer	$storagePID storage page id of mm_forum.
+ * @param	$this		$pObj: parent object
+ * @param	bool		$useTSDataHook: Whether the TypoScriptDataHook should be used
+ * @return	void
+ */
+	public static function createTopicForRecord(&$parameters, &$conf, $pid, $storagePID, &$pObj, $useTSDataHook=true, $data=false) {
+    require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
+
+    if (!(is_array($data)) || ($useTSDataHook)) {
+      $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $pObj, $useTSDataHook);
+    }
+
+  	$commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $conf);
+  	$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $conf);
+  	$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $conf, $data);
+  	$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $conf, $data);
+  	$link = tx_mmforumcomments_div::getTSparsedString('linktopage', $parameters[2], $conf, $data);
+  	$date = tx_mmforumcomments_div::getDate($parameters[2], $conf, $data);
+
+    tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
+            $commcat, $commaut,
+            tx_mmforumcomments_div::prepareString($subject),
+            tx_mmforumcomments_div::prepareString($posttext.$link),
+            $date, tx_mmforumcomments_div::getRelationTable(),
+            $storagePID);
+	}
+
+	static public function getRelationTable() {
+    return 'tx_mmforumcomments_links';
+  }
 
 /**
  * Loads the TypoScript setup for a specific page.
@@ -291,11 +329,10 @@
 	/**
 	 * Returns search parameter (WHERE clause)
 	 *
-	 *
-	 * @param	array	$paraconf: The parameter segment of the TS plugin setup
-	 * @return array	returns nothing if no parameters are configured in
+	 * @param	array		$paraconf: The parameter segment of the TS plugin setup
 	 *                  TypoScipt or the parameter name and unique parameter
 	 *                  value in the linktable of the extension
+	 * @return	array		returns nothing if no parameters are configured in
 	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
 	public static function getParameter($paraconf) {
@@ -332,7 +369,11 @@
 	 * @return	integer		page ID
 	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
-	public static function getCommentPID($tid, $relationTable) {
+	public static function getCommentPID($tid, $relationTable=false) {
+	  if($relationTable===false) {
+      $relationTable = tx_mmforumcomments_div::getRelationTable();
+    }
+
 	  $PID = 0;
     $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('pid',
   				 $relationTable, 'fid=' . intval($tid),
@@ -358,7 +399,11 @@
 	 * @return	integer		ID of the exsting topic
 	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
-	public static function getTopicID($pid, $parameters, $relationTable) {
+	public static function getTopicID($pid, $parameters, $relationTable=false) {
+	  if($relationTable===false) {
+      $relationTable = tx_mmforumcomments_div::getRelationTable();
+    }
+
     if (intval($pid) > 0) {
       $where = '';
 

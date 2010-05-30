@@ -66,10 +66,7 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 	 */
 	function main($content, $conf) {
 		$this->pi_setPiVarDefaults();
-
-		$relationTable = 'tx_mmforumcomments_links';
 		$pid = tx_mmforumcomments_div::getPageID();
-
   	$setup = tx_mmforumcomments_div::loadTSSetupForPage($pid);
 		$parameters = tx_mmforumcomments_div::getParameter($conf['parameters.']);
 
@@ -79,33 +76,16 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
       $pid = $data['pid'];
     }
 
-    $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters, $relationTable);
+    $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
 
     /* Create new topic, if needed */
-    if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {
-      if (!(is_array($data)) || is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'])) {
-        $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $this);
-      }
-
-      $commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $conf);
-  		$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $conf);
-  		$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $conf, $data);
-  		$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $conf, $data);
-  		$link = tx_mmforumcomments_div::getTSparsedString('linktopage', $parameters[2], $conf, $data);
-  		$date = tx_mmforumcomments_div::getDate($parameters[2], $conf, $data);
-
-      tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
-              $commcat, $commaut,
-              tx_mmforumcomments_div::prepareString($subject),
-              tx_mmforumcomments_div::prepareString($posttext.$link),
-              $date, $relationTable,
-              $setup['plugin.']['tx_mmforum.']['storagePID']);
-
-      $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters, $relationTable);
+    if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {      
+      tx_mmforumcomments_div::createTopicForRecord($parameters, $conf, $pid, $setup['plugin.']['tx_mmforum.']['storagePID'], $this, true, $data);
+      $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
     }
 
     /* Return nothing if no topic is found. */
-    if ($topicID == 0) {
+    if ($topicID === 0) {
       return $content;
     }
 

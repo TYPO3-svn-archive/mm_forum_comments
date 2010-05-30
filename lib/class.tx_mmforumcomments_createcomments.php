@@ -72,6 +72,31 @@
 	}
 
 /**
+ * Creates a new comment within topic.
+ * This method uses the mm_forum postfactory to create the new topic.
+ *
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ * @param   int     $tid:     The UID of the topic the new post
+ * @param   int     $aid:     The UID of the fe_user creating this topic
+ * @param   string  $text:    The post text
+ * @param   int     $date:    The date of topic creation as unix timestamp
+ * @param   int     $forumStoragePID: The page ID where the forum data is stored 
+ * @param	  string	$aName:   The name of the comment author
+ * @return	void
+ */
+	public static function createPost($tid, $aid, $text, $date, $forumStoragePID, $aName) {
+  	$postId = tx_mmforumcomments_createcomments::getPostFactory($forumStoragePID)->create_post(
+            $tid, $aid, $text, $date,
+				    dechex(ip2long(t3lib_div::getIndpEnv('REMOTE_ADDR')))
+			     );
+
+    // Save original t3blog comments author name in mm_forum post 
+		$updateArray = array('tx_mmforumcomments_authorname ' => $aName);
+    $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_mmforum_posts',
+                                           'uid = ' . $postId, $updateArray);
+	}
+
+/**
  * Instantiates and returns the mm_forum post factory.
  *
  * @param   int     $forumStoragePID: The page ID where the forum data is stored

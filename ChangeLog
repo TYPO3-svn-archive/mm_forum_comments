@@ -1,3 +1,9 @@
+2010-05-30 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* pi1: Outsourced creation of a new comment topic to a helper function in div
+	* lib/div: get relation table from function instead of a parameter
+	* lib/createcomments: create comment post in comment topic 	
+
 2010-05-26 Hauke Hain  <hhpreuss@googlemail.com>
 
 	* pi1: Load TypoScriptData from database only if necessary. Do not use hook if
