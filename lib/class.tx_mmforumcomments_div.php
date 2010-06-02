@@ -61,7 +61,7 @@
  * @param	integer	$storagePID storage page id of mm_forum.
  * @param	$this		$pObj: parent object
  * @param	bool		$useTSDataHook: Whether the TypoScriptDataHook should be used
- * @return	void
+ * @return	int/boolean       The topic's UID or FALSE (on error)
  */
 	public static function createTopicForRecord(&$parameters, &$conf, $pid, $storagePID, &$pObj, $useTSDataHook=true, $data=false) {
     require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
@@ -77,7 +77,7 @@
   	$link = tx_mmforumcomments_div::getTSparsedString('linktopage', $parameters[2], $conf, $data);
   	$date = tx_mmforumcomments_div::getDate($parameters[2], $conf, $data);
 
-    tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
+    return tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
             $commcat, $commaut,
             tx_mmforumcomments_div::prepareString($subject),
             tx_mmforumcomments_div::prepareString($posttext.$link),

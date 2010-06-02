@@ -52,7 +52,7 @@
  * @param   int     $date:    The date of topic creation as unix timestamp
  * @param	  string	$relationTable: Table name
  * @param   int     $forumStoragePID: The page ID where the forum data is stored
- * @return	void
+ * @return	int/boolean       The topic's UID or FALSE (on error)
  */
 	public static function createTopic($pid, $para, $fid, $aid, $subject, $text, $date, $relationTable, $forumStoragePID) {
   	$tid = tx_mmforumcomments_createcomments::getPostFactory($forumStoragePID)->create_topic(
@@ -69,6 +69,8 @@
                         );
 
     $GLOBALS['TYPO3_DB']->exec_INSERTquery($relationTable, $insertArray, true);
+
+    return $tid;
 	}
 
 /**
@@ -82,18 +84,23 @@
  * @param   int     $date:    The date of topic creation as unix timestamp
  * @param   int     $forumStoragePID: The page ID where the forum data is stored 
  * @param	  string	$aName:   The name of the comment author
- * @return	void
+ * @return	int/boolean       The post's UID or FALSE (on error)
  */
 	public static function createPost($tid, $aid, $text, $date, $forumStoragePID, $aName) {
+	  require_once(t3lib_extMgm::extPath('mm_forum') . 'pi4/class.tx_mmforum_indexing.php');
   	$postId = tx_mmforumcomments_createcomments::getPostFactory($forumStoragePID)->create_post(
             $tid, $aid, $text, $date,
 				    dechex(ip2long(t3lib_div::getIndpEnv('REMOTE_ADDR')))
 			     );
 
-    // Save original t3blog comments author name in mm_forum post 
-		$updateArray = array('tx_mmforumcomments_authorname ' => $aName);
-    $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_mmforum_posts',
-                                           'uid = ' . $postId, $updateArray);
+    if($postId!=false) {
+      // Save original t3blog comments author name in mm_forum post 
+  		$updateArray = array('tx_mmforumcomments_authorname ' => $aName);
+      $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_mmforum_posts',
+                                             'uid = ' . $postId, $updateArray);
+    }
+
+    return $postId;
 	}
 
 /**
