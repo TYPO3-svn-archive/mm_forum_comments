@@ -9,5 +9,7 @@ CREATE TABLE tx_mmforumcomments_links (
 	parameteruid int(11) DEFAULT '0' NOT NULL
 	
 	KEY parent (pid),
-	KEY tx_mmforumnews_topic (fid)
+	KEY tx_mmforumnews_topic (fid),
+	KEY searchTopicTerm1 (pid,parameter(32),parameteruid),
+	KEY searchTopicTerm2 (pid,parameteruid)
 );

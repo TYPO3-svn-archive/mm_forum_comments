@@ -408,7 +408,7 @@
       $where = '';
 
       if (intval($parameters[1]) > 0) {
-        $where = ' AND parameter LIKE \'' . $parameters[0] .
+        $where = ' AND parameter = \'' . $parameters[0] .
                  '\' AND parameteruid = ' . $parameters[1];
       } else {
         $where = ' AND parameteruid = 0';
