@@ -74,7 +74,7 @@
   	$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $conf);
   	$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $conf, $data);
   	$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $conf, $data);
-  	$link = tx_mmforumcomments_div::getTSparsedString('linktopage', $parameters[2], $conf, $data);
+  	$link = tx_mmforumcomments_div::getForumTypoLinkUrl('linktopage', $parameters[2], $conf, $data);
   	$date = tx_mmforumcomments_div::getDate($parameters[2], $conf, $data);
 
     return tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
@@ -143,6 +143,21 @@
 	}
 
 /**
+ * Chooses the correct TypoScript configuration
+ *
+ * @param	string		$tskey: The TypoScript which will be called
+ * @param	string		$key: TypoScript key where to look in the parameter list
+ * @param	array		$conf: The TypoScript setup
+ * @return	string		The subject of the comment thread
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
+  public static function getTypoScriptConfig(&$tskey, &$key, &$conf) {
+    if (!empty($conf['parameters.'][$key . '.'][$tskey])) {
+      $conf = $conf['parameters.'][$key . '.'];
+    }
+  }
+
+/**
  * Returns string created by TypoScript parser (GetSingle)
  *
  * @param	string		$tskey: The TypoScript which will be called
@@ -153,11 +168,41 @@
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
   public static function getTSparsedString($tskey, $key, $conf, $data) {
-    if (!empty($conf['parameters.'][$key . '.'][$tskey])) {
-      $conf = $conf['parameters.'][$key . '.'];
-    }
-
+    tx_mmforumcomments_div::getTypoScriptConfig($tskey, $key, $conf);
     return tx_mmforumcomments_div::getSingle($data, $tskey, $conf);
+  }
+
+/**
+ * Returns string created by TypoScript parser (GetSingle), may force own TypoScript parser if useOwnLinkParser is set
+ *
+ * @param	string		$tskey: The TypoScript which will be called
+ * @param	string		$key: TypoScript key where to look in the parameter list
+ * @param	array		$conf: The TypoScript setup
+ * @param	array		$data: The data that is available via TypoScript
+ * @return	string		The subject of the comment thread
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
+  public static function getForumTypoLinkUrl($tskey, $key, $conf, $data) {
+	tx_mmforumcomments_div::getTypoScriptConfig($tskey, $key, $conf);
+
+	// Is own link parser forced?
+	if ((int) $conf[$tskey . '.']['useOwnLinkParser'] === 1) {
+		// Use own TypoScript-parser (works partly) for creating new style mm_forum TypoLinks ([URL]record:page:uid[/URL])
+		require_once(t3lib_extMgm::extPath('mm_forum_comments') . 'lib/class.tx_mmforumcomments_typoscript.php');
+		$ret = '';
+
+		foreach (array_keys($conf[$tskey . '.']) as $key) {
+			// work only with TEXT objects
+			if ((strstr($key, '.') && is_array($tsarr = $conf[$tskey . '.'][$key]) && strtoupper($conf[$tskey . '.'][str_replace('.','',$key)]) === 'TEXT') && (tx_mmforumcomments_typoscript::returnResultOfTSif($data, $tsarr))) {
+				$ret .= tx_mmforumcomments_typoscript::getTSvalueOfTEXT($data, $tsarr);
+			}
+		}
+
+		return $ret;
+
+	} else {
+		return tx_mmforumcomments_div::getSingle($data, $tskey, $conf);
+	}
   }
 
 /**
