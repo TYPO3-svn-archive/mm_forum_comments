@@ -23,6 +23,7 @@ plugin.tx_mmforumcomments_pi1 {
   	
   	
     [b]Read everything on:[/b]
+    
     )
     11 = TEXT
     11.value = -->&nbsp;

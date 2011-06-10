@@ -25,6 +25,7 @@ plugin.tx_mmforumcomments_pi1 {
       	
       	
         [b]Read the whole news article:[/b]
+        
         )
         11 = TEXT
         11.value = -->&nbsp;

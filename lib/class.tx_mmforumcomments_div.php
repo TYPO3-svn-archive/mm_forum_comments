@@ -57,11 +57,12 @@
  *
  * @param	array		&$parameters The URL parameters.
  * @param	array		&$conf The mm_forum_comments TypoScript setup.
- * @param	integer	$pid page id for the relation table.
- * @param	integer	$storagePID storage page id of mm_forum.
+ * @param	integer		$pid page id for the relation table.
+ * @param	integer		$storagePID storage page id of mm_forum.
  * @param	$this		$pObj: parent object
  * @param	bool		$useTSDataHook: Whether the TypoScriptDataHook should be used
- * @return	int/boolean       The topic's UID or FALSE (on error)
+ * @param	array		$data: Data which will be passed to the TypoScript
+ * @return	int/boolean	The topic's UID or FALSE (on error)
  */
 	public static function createTopicForRecord(&$parameters, &$conf, $pid, $storagePID, &$pObj, $useTSDataHook=true, $data=false) {
     require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
@@ -112,10 +113,10 @@
 	}
 
 	/**
-	 * Parses data through typoscript.
+	 * Parses data through TypoScript.
 	 *
-	 * @param	array		$data Data which will be passed to the typoscript.
-	 * @param	string		$tsObjectKey The typoscript which will be called.
+	 * @param	array		$data Data which will be passed to the TypoScript.
+	 * @param	string		$tsObjectKey The TypoScript which will be called.
 	 * @param	array		$tsObjectConf TS object configuration
 	 * @return	string
 	 */

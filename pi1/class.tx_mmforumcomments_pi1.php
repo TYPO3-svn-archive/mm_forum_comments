@@ -132,7 +132,7 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
         $markers['###LABEL_SHOWN_COMMENTS###'] = $this->pi_getLL('showncomments');
         $markers['###LABEL_COMMENTS###'] = $this->pi_getLL('comments');
 
-        if ($this->conf['post_limit'] > $topic_replies) {
+        if ($topic_replies > intval($this->conf['post_limit'])) {
           $markers['###LABEL_COMMENTS###'] = $this->pi_getLL('commentsSingle');
         }
   		} else {
