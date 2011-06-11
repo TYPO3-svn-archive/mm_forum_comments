@@ -1,3 +1,12 @@
+2011-06-10 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* updated documentation and manual
+
+2011-05-31 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* div / createcomments: support new style mm_forum link creation
+							by forcing to use own TypoScript parser for linktopage
+
 2010-10-29 Hauke Hain  <hhpreuss@googlemail.com>
 
 	* div: SQL optimation
