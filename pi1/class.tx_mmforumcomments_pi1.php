@@ -79,7 +79,7 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
     $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
 
     /* Create new topic, if needed */
-    if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {      
+    if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {
       tx_mmforumcomments_div::createTopicForRecord($parameters, $conf, $pid, $setup['plugin.']['tx_mmforum.']['storagePID'], $this, true, $data);
       $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
     }
@@ -234,35 +234,38 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 			'action' => 'list_post',
 				 'tid' => $this->local_cObj->data['uid'],
 				 'pid' => 'last'
-    );
+		);
 
 		if ($this->useRealUrl()) {
-		  $linkParams[$this->prefixId]['fid'] = $this->local_cObj->data['forum_id'];
+			$linkParams[$this->prefixId]['fid'] = $this->local_cObj->data['forum_id'];
 		}
 
-    //change image setup temporarily
-    $tmpimgpath = $this->conf['path_img'];
-    $tmpButtonWrap = $this->conf['buttons.']['normal.']['stdWrap.']['wrap'];
+	if (!empty($imgpath)) {
+		//change image setup temporarily
+		$tmpimgpath = $this->conf['path_img'];
+		$tmpButtonWrap = $this->conf['buttons.']['normal.']['stdWrap.']['wrap'];
 
-    if (!empty($imgpath)) {
-      $imgconf = $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import']; 
-      $this->conf['path_img'] = $imgpath;
-      $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgpath . 'default/buttons/icons/';
-    }
+		// createButton uses file_exists -> correct the path
+		$imgpath = str_replace('EXT:mm_forum_comments/', t3lib_extMgm::siteRelPath('mm_forum_comments'), $imgpath);
 
-    if (!empty($buttonWrap)) {
-      $this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $buttonWrap;
-    }
+		$imgconf = $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import']; 
+		$this->conf['path_img'] = $imgpath;
+		$this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgpath . 'buttons/icons/';
+	}
 
-    $btn = $this->createButton('gotoForum', $linkParams, $pid);
+	if (!empty($buttonWrap)) {
+		$this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $buttonWrap;
+	}
 
-    if (!empty($imgpath)) {
-      $this->conf['path_img'] = $tmpimgpath;
-      $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgconf;
-      $this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $tmpButtonWrap;
-    }
+	$btn = $this->createButton('gotoForum', $linkParams, $pid);
 
-    return $btn;
+	if (!empty($imgpath)) {
+		$this->conf['path_img'] = $tmpimgpath;
+		$this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgconf;
+		$this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $tmpButtonWrap;
+	}
+
+	return $btn;
   }
 
 /**

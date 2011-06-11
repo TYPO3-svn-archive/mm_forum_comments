@@ -1,6 +1,0 @@
-plugin.tx_mmforum {
-  hideFirstPost = 1
-  postOrderingMode = DESC
-}
-
-<INCLUDE_TYPOSCRIPT: source="FILE: typo3conf/tx_mmforum_config.ts">

@@ -1,3 +1,7 @@
+2011-06-11 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* "EXT:mm_forum_comments" gets replaced with rel path now
+
 2011-06-10 Hauke Hain  <hhpreuss@googlemail.com>
 
 	* updated documentation and manual
