@@ -5,7 +5,6 @@ mod.web_txmmforumM1 {
 	essentialConfiguration {
 		mmforumcomments_pageCommentCategory = 1
 		mmforumcomments_pageTopicAuthor     = 1
-		mmforumcomments_hideFirstPost       = 1
 	}
 
 	submodules {
