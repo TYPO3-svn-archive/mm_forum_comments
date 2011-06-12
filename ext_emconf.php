@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext "mm_forum_comments".
 #
-# Auto generated 11-06-2011 13:15
+# Auto generated 12-06-2011 02:28
 #
 # Manual updates:
 # Only the data in the array - everything else is removed by next
@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'description' => 'mm_forum posts/topics are used as page comments.',
 	'category' => 'plugin',
 	'shy' => 0,
-	'version' => '1.1.1',
+	'version' => '1.2.0',
 	'dependencies' => 'cms,mm_forum',
 	'conflicts' => '',
 	'priority' => '',
@@ -35,6 +35,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'constraints' => array(
 		'depends' => array(
 			'cms' => '',
+			'typo3' => '4.4.0-0.0.0',
 			'mm_forum' => '1.9.0-0.0.0',
 		),
 		'conflicts' => array(
@@ -42,7 +43,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'suggests' => array(
 		),
 	),
-	'_md5_values_when_last_written' => 'a:28:{s:9:"ChangeLog";s:4:"0315";s:10:"README.txt";s:4:"46ba";s:12:"ext_icon.gif";s:4:"167d";s:17:"ext_localconf.php";s:4:"79b2";s:14:"ext_tables.php";s:4:"5ab6";s:14:"ext_tables.sql";s:4:"23ad";s:28:"ext_typoscript_constants.txt";s:4:"e4b4";s:33:"icon_tx_mmforumcomments_links.gif";s:4:"475a";s:13:"locallang.xml";s:4:"8f99";s:16:"locallang_db.xml";s:4:"2bb2";s:7:"tca.php";s:4:"74f0";s:14:"doc/manual.sxw";s:4:"94be";s:47:"lib/class.tx_mmforumcomments_createcomments.php";s:4:"7662";s:36:"lib/class.tx_mmforumcomments_div.php";s:4:"55c2";s:38:"lib/class.tx_mmforumcomments_hooks.php";s:4:"de88";s:43:"lib/class.tx_mmforumcomments_modinstall.php";s:4:"10b2";s:43:"lib/class.tx_mmforumcomments_typoscript.php";s:4:"98cc";s:36:"pi1/class.tx_mmforumcomments_pi1.php";s:4:"da38";s:44:"pi1/class.tx_mmforumcomments_pi1_wizicon.php";s:4:"f503";s:13:"pi1/clear.gif";s:4:"cc11";s:17:"pi1/locallang.xml";s:4:"b04b";s:35:"res/img/buttons/icons/gotoForum.png";s:4:"6eef";s:28:"res/img/mod/mmforum-conf.png";s:4:"de58";s:22:"res/lang/locallang.xml";s:4:"a325";s:22:"res/tmpl/comments.html";s:4:"1481";s:41:"res/ts/tx_mmforumcomments_pagetsconfig.ts";s:4:"6362";s:23:"res/ts/static/setup.txt";s:4:"18b2";s:28:"res/ts/static/news/setup.txt";s:4:"e214";}',
+	'_md5_values_when_last_written' => 'a:27:{s:9:"ChangeLog";s:4:"67d6";s:10:"README.txt";s:4:"46ba";s:12:"ext_icon.gif";s:4:"167d";s:17:"ext_localconf.php";s:4:"79b2";s:14:"ext_tables.php";s:4:"5ab6";s:14:"ext_tables.sql";s:4:"23ad";s:33:"icon_tx_mmforumcomments_links.gif";s:4:"475a";s:13:"locallang.xml";s:4:"8f99";s:16:"locallang_db.xml";s:4:"2bb2";s:7:"tca.php";s:4:"74f0";s:14:"doc/manual.sxw";s:4:"1acb";s:47:"lib/class.tx_mmforumcomments_createcomments.php";s:4:"7662";s:36:"lib/class.tx_mmforumcomments_div.php";s:4:"6449";s:38:"lib/class.tx_mmforumcomments_hooks.php";s:4:"1bcf";s:43:"lib/class.tx_mmforumcomments_modinstall.php";s:4:"10b2";s:43:"lib/class.tx_mmforumcomments_typoscript.php";s:4:"98cc";s:36:"pi1/class.tx_mmforumcomments_pi1.php";s:4:"c7fb";s:44:"pi1/class.tx_mmforumcomments_pi1_wizicon.php";s:4:"f503";s:13:"pi1/clear.gif";s:4:"cc11";s:17:"pi1/locallang.xml";s:4:"b04b";s:35:"res/img/buttons/icons/gotoForum.png";s:4:"6eef";s:28:"res/img/mod/mmforum-conf.png";s:4:"de58";s:22:"res/lang/locallang.xml";s:4:"a797";s:22:"res/tmpl/comments.html";s:4:"1481";s:41:"res/ts/tx_mmforumcomments_pagetsconfig.ts";s:4:"2159";s:23:"res/ts/static/setup.txt";s:4:"18b2";s:28:"res/ts/static/news/setup.txt";s:4:"e214";}',
 	'suggests' => array(
 	),
 );
