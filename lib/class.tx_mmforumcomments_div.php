@@ -26,32 +26,34 @@
  *
  *
  *
- *   53: class tx_mmforumcomments_div
- *   66:     public static function createTopicForRecord(&$parameters, &$conf, $pid, $storagePID, &$pObj, $useTSDataHook=true)
- *   99:     public static function loadTSSetupForPage($pid)
- *  120:     private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf)
- *  153:     public static function getTSparsedString($tskey, $key, $conf, $data)
- *  168:     public static function prepareString($str)
- *  196:     public static function prepareURL($url)
- *  227:     public function getPageID()
- *  244:     public static function getCommentCategoryUID($key, $conf)
- *  256:     public static function getTopicAuthorUID($key, $conf)
- *  269:     public static function getDate($key, $conf, &$data)
- *  286:     public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true)
- *  338:     public static function getParameter($paraconf)
- *  372:     public static function getCommentPID($tid, $relationTable=false)
- *  403:     public static function getTopicID($pid, $parameters, $relationTable=false)
- *  442:     public static function getFirstTopicPostID($topicId, $storagePID)
- *  465:     public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0)
- *  491:     public static function clearPageCache($pid)
- *  505:     public static function getInstallToolSettings()
+ *   55: class tx_mmforumcomments_div
+ *   69:     public static function createTopicForRecord(&$parameters, &$conf, $pid, $storagePID, &$pObj, $useTSDataHook=true, $data=false)
+ *  104:     public static function loadTSSetupForPage($pid)
+ *  125:     private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf)
+ *  157:     public static function getTypoScriptConfig(&$tskey, &$key, &$conf)
+ *  173:     public static function getTSparsedString($tskey, $key, $conf, $data)
+ *  188:     public static function getForumTypoLinkUrl($tskey, $key, $conf, $data)
+ *  218:     public static function prepareString($str)
+ *  245:     public static function prepareURL($url)
+ *  276:     public function getPageID()
+ *  293:     public static function getCommentCategoryUID($key, $conf)
+ *  305:     public static function getTopicAuthorUID($key, $conf)
+ *  318:     public static function getDate($key, $conf, &$data)
+ *  335:     public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true)
+ *  386:     public static function getParameter($paraconf)
+ *  417:     public static function getCommentPID($tid, $relationTable=false)
+ *  449:     public static function getTopicID($pid, $parameters, $relationTable=false)
+ *  488:     public static function getFirstTopicPostID($topicId, $storagePID)
+ *  511:     public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0)
+ *  537:     public static function clearPageCache($pid)
+ *  551:     public static function getInstallToolSettings()
  *
- * TOTAL FUNCTIONS: 18
+ * TOTAL FUNCTIONS: 20
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
  class tx_mmforumcomments_div {
-		/**
+/**
  * This method uses the mm_forum postfactory interface in order to create
  * a new topic for comments.
  *
@@ -65,30 +67,30 @@
  * @return	int/boolean	The topic's UID or FALSE (on error)
  */
 	public static function createTopicForRecord(&$parameters, &$conf, $pid, $storagePID, &$pObj, $useTSDataHook=true, $data=false) {
-    require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
+		require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcomments_createcomments.php');
 
-    if (!(is_array($data)) || ($useTSDataHook)) {
-      $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $pObj, $useTSDataHook);
-    }
+		if (!(is_array($data)) || ($useTSDataHook)) {
+			$data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $pObj, $useTSDataHook);
+		}
 
-  	$commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $conf);
-  	$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $conf);
-  	$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $conf, $data);
-  	$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $conf, $data);
-  	$link = tx_mmforumcomments_div::getForumTypoLinkUrl('linktopage', $parameters[2], $conf, $data);
-  	$date = tx_mmforumcomments_div::getDate($parameters[2], $conf, $data);
+		$commcat = tx_mmforumcomments_div::getCommentCategoryUID($parameters[2], $conf);
+		$commaut = tx_mmforumcomments_div::getTopicAuthorUID($parameters[2], $conf);
+		$subject = tx_mmforumcomments_div::getTSparsedString('subject', $parameters[2], $conf, $data);
+		$posttext = tx_mmforumcomments_div::getTSparsedString('posttext', $parameters[2], $conf, $data);
+		$link = tx_mmforumcomments_div::getForumTypoLinkUrl('linktopage', $parameters[2], $conf, $data);
+		$date = tx_mmforumcomments_div::getDate($parameters[2], $conf, $data);
 
-    return tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
-            $commcat, $commaut,
-            tx_mmforumcomments_div::prepareString($subject),
-            tx_mmforumcomments_div::prepareString($posttext.$link),
-            $date, tx_mmforumcomments_div::getRelationTable(),
-            $storagePID);
+		return tx_mmforumcomments_createcomments::createTopic($pid, $parameters,
+						$commcat, $commaut,
+						tx_mmforumcomments_div::prepareString($subject),
+						tx_mmforumcomments_div::prepareString($posttext.$link),
+						$date, tx_mmforumcomments_div::getRelationTable(),
+						$storagePID);
 	}
 
 	static public function getRelationTable() {
-    return 'tx_mmforumcomments_links';
-  }
+		return 'tx_mmforumcomments_links';
+	}
 
 /**
  * Loads the TypoScript setup for a specific page.
@@ -109,7 +111,7 @@
 			$tmpl->runThroughTemplates($rootLine,0);
 			$tmpl->generateConfig();
 
-      return $tmpl->setup;
+		return $tmpl->setup;
 	}
 
 	/**
@@ -121,24 +123,24 @@
 	 * @return	string
 	 */
 	private static function getSingle(&$data, &$tsObjectKey, &$tsObjectConf) {
-    $ret = '';
+		$ret = '';
 
-	  if ($GLOBALS['TSFE'] === null) {
-	   //parse TypoScript by yourself if you work from the backend
-     require_once(t3lib_extMgm::extPath('mm_forum_comments') . 'lib/class.tx_mmforumcomments_typoscript.php');
+		if ($GLOBALS['TSFE'] === null) {
+			//parse TypoScript by yourself if you work from the backend
+			require_once(t3lib_extMgm::extPath('mm_forum_comments') . 'lib/class.tx_mmforumcomments_typoscript.php');
 
-	   foreach (array_keys($tsObjectConf[$tsObjectKey . '.']) as $key) {
-	    // work only with TEXT objects
-      if ((strstr($key, '.') && is_array($tsarr = $tsObjectConf[$tsObjectKey . '.'][$key]) && strtoupper($tsObjectConf[$tsObjectKey . '.'][str_replace('.','',$key)]) === 'TEXT') && (tx_mmforumcomments_typoscript::returnResultOfTSif($data, $tsarr))) {
-        $ret .= tx_mmforumcomments_typoscript::getTSvalueOfTEXT($data, $tsarr);
-      }
-     }
+			foreach (array_keys($tsObjectConf[$tsObjectKey . '.']) as $key) {
+				// work only with TEXT objects
+				if ((strstr($key, '.') && is_array($tsarr = $tsObjectConf[$tsObjectKey . '.'][$key]) && strtoupper($tsObjectConf[$tsObjectKey . '.'][str_replace('.','',$key)]) === 'TEXT') && (tx_mmforumcomments_typoscript::returnResultOfTSif($data, $tsarr))) {
+					$ret .= tx_mmforumcomments_typoscript::getTSvalueOfTEXT($data, $tsarr);
+				}
+			}
 
-    } else {
-  		$cObj = t3lib_div::makeInstance('tslib_cObj');
-  		$cObj->data = $data;
-  		$ret = $cObj->cObjGetSingle($tsObjectConf[$tsObjectKey], $tsObjectConf[$tsObjectKey . '.']);
-    }
+		} else {
+			$cObj = t3lib_div::makeInstance('tslib_cObj');
+			$cObj->data = $data;
+			$ret = $cObj->cObjGetSingle($tsObjectConf[$tsObjectKey], $tsObjectConf[$tsObjectKey . '.']);
+		}
 
 		return $ret;
 	}
@@ -152,11 +154,11 @@
  * @return	string		The subject of the comment thread
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function getTypoScriptConfig(&$tskey, &$key, &$conf) {
-    if (!empty($conf['parameters.'][$key . '.'][$tskey])) {
-      $conf = $conf['parameters.'][$key . '.'];
-    }
-  }
+	public static function getTypoScriptConfig(&$tskey, &$key, &$conf) {
+		if (!empty($conf['parameters.'][$key . '.'][$tskey])) {
+			$conf = $conf['parameters.'][$key . '.'];
+		}
+	}
 
 /**
  * Returns string created by TypoScript parser (GetSingle)
@@ -168,10 +170,10 @@
  * @return	string		The subject of the comment thread
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function getTSparsedString($tskey, $key, $conf, $data) {
-    tx_mmforumcomments_div::getTypoScriptConfig($tskey, $key, $conf);
-    return tx_mmforumcomments_div::getSingle($data, $tskey, $conf);
-  }
+	public static function getTSparsedString($tskey, $key, $conf, $data) {
+		tx_mmforumcomments_div::getTypoScriptConfig($tskey, $key, $conf);
+		return tx_mmforumcomments_div::getSingle($data, $tskey, $conf);
+	}
 
 /**
  * Returns string created by TypoScript parser (GetSingle), may force own TypoScript parser if useOwnLinkParser is set
@@ -183,28 +185,28 @@
  * @return	string		The subject of the comment thread
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function getForumTypoLinkUrl($tskey, $key, $conf, $data) {
-	tx_mmforumcomments_div::getTypoScriptConfig($tskey, $key, $conf);
-
-	// Is own link parser forced?
-	if ((int) $conf[$tskey . '.']['useOwnLinkParser'] === 1) {
-		// Use own TypoScript-parser (works partly) for creating new style mm_forum TypoLinks ([URL]record:page:uid[/URL])
-		require_once(t3lib_extMgm::extPath('mm_forum_comments') . 'lib/class.tx_mmforumcomments_typoscript.php');
-		$ret = '';
-
-		foreach (array_keys($conf[$tskey . '.']) as $key) {
-			// work only with TEXT objects
-			if ((strstr($key, '.') && is_array($tsarr = $conf[$tskey . '.'][$key]) && strtoupper($conf[$tskey . '.'][str_replace('.','',$key)]) === 'TEXT') && (tx_mmforumcomments_typoscript::returnResultOfTSif($data, $tsarr))) {
-				$ret .= tx_mmforumcomments_typoscript::getTSvalueOfTEXT($data, $tsarr);
+	public static function getForumTypoLinkUrl($tskey, $key, $conf, $data) {
+		tx_mmforumcomments_div::getTypoScriptConfig($tskey, $key, $conf);
+	
+		// Is own link parser forced?
+		if ((int) $conf[$tskey . '.']['useOwnLinkParser'] === 1) {
+			// Use own TypoScript-parser (works partly) for creating new style mm_forum TypoLinks ([URL]record:page:uid[/URL])
+			require_once(t3lib_extMgm::extPath('mm_forum_comments') . 'lib/class.tx_mmforumcomments_typoscript.php');
+			$ret = '';
+	
+			foreach (array_keys($conf[$tskey . '.']) as $key) {
+				// work only with TEXT objects
+				if ((strstr($key, '.') && is_array($tsarr = $conf[$tskey . '.'][$key]) && strtoupper($conf[$tskey . '.'][str_replace('.','',$key)]) === 'TEXT') && (tx_mmforumcomments_typoscript::returnResultOfTSif($data, $tsarr))) {
+					$ret .= tx_mmforumcomments_typoscript::getTSvalueOfTEXT($data, $tsarr);
+				}
 			}
+	
+			return $ret;
+	
+		} else {
+			return tx_mmforumcomments_div::getSingle($data, $tskey, $conf);
 		}
-
-		return $ret;
-
-	} else {
-		return tx_mmforumcomments_div::getSingle($data, $tskey, $conf);
 	}
-  }
 
 /**
  * Replaces &nbsps; and a-tags with BBcode equivalents
@@ -213,25 +215,24 @@
  * @return	string		The prepared string
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function prepareString($str) {
-    $str = str_replace('&nbsp;', ' ', $str);
-
-    // BBCode link creation
-    $output = array();
+	public static function prepareString($str) {
+		$str = str_replace('&nbsp;', ' ', $str);
+	
+		// BBCode link creation
+		$output = array();
 		preg_match_all('/(\<a\shref=")(.*?)("{1}\s{0,1}\>{1})(.*?)(\<\/a\>)/', $str, $output);
-
+	
 		if (is_array($output) && sizeof($output) == 6 && is_array($output[0])) {
-  		for($i = 0; $i < sizeof($output[0]); ++$i)
-      {
-    		$url = tx_mmforumcomments_div::prepareURL($output[2][$i]);
-    		$linkname = $output[4][$i];
-    		$replacement = '[URL="' . $url . '"]' . $linkname . '[/URL]';
-    		$str = str_replace($output[0][$i], $replacement, $str);
-      }
-    }
-
-    return $str;
-  }
+			for($i = 0; $i < sizeof($output[0]); ++$i) {
+				$url = tx_mmforumcomments_div::prepareURL($output[2][$i]);
+				$linkname = $output[4][$i];
+				$replacement = '[URL="' . $url . '"]' . $linkname . '[/URL]';
+				$str = str_replace($output[0][$i], $replacement, $str);
+			}
+		}
+	
+		return $str;
+	}
 
 /**
  * Returns an absolute URL instead of an relative
@@ -241,31 +242,31 @@
  * @return	string		The absolute URL
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function prepareURL($url) {
-    if (strpos($url, 'http://') === false) {
-      $baseURL = $GLOBALS['TSFE']->config['config']['baseURL'];
+	public static function prepareURL($url) {
+		if (strpos($url, 'http://') === false) {
+			$baseURL = $GLOBALS['TSFE']->config['config']['baseURL'];
 
-      if (empty($baseURL)) {
-        $baseURL = $_SERVER['SERVER_NAME'];
-      }
+			if (empty($baseURL)) {
+				$baseURL = $_SERVER['SERVER_NAME'];
+			}
 
-    	if (strrpos($baseURL, '/') != strlen($baseURL)-1) {
-        $baseURL .= '/';
-      }
+			if (strrpos($baseURL, '/') != strlen($baseURL)-1) {
+				$baseURL .= '/';
+			}
 
-      if (strpos($url, $baseURL) === false) {
-        $url = $baseURL . $url;
-      }
+			if (strpos($url, $baseURL) === false) {
+				$url = $baseURL . $url;
+			}
 
-    	if (strpos($url, 'http://') === false) {
-        $url = 'http://' . $url;
-      }
-    }
+			if (strpos($url, 'http://') === false) {
+				$url = 'http://' . $url;
+			}
+		}
 
-    return $url;
-  }
+		return $url;
+	}
 
-  /**
+/**
  * If a starting points are set the first one is returned, otherwise the
  * id of the current page.
  *
@@ -273,13 +274,13 @@
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
 	public function getPageID() {
-    if (empty($this->cObj->data['pages'])) {
-      return $GLOBALS['TSFE']->id;
-    } else {
-      $pids = explode(',', $this->cObj->data['pages']);
-      return $pids[0];
-    }
-  }
+		if (empty($this->cObj->data['pages'])) {
+			return $GLOBALS['TSFE']->id;
+		} else {
+			$pids = explode(',', $this->cObj->data['pages']);
+			return $pids[0];
+		}
+	}
 
 /**
  * Returns the UID of the forum where the comment topic is / will be located
@@ -289,9 +290,9 @@
  * @return	string		forum UID
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function getCommentCategoryUID($key, $conf) {
-    return empty($conf['parameters.'][$key . '.']['pageCommentCategory']) ? $conf['pageCommentCategory'] : $conf['parameters.'][$key . '.']['pageCommentCategory'];
-  }
+	public static function getCommentCategoryUID($key, $conf) {
+		return empty($conf['parameters.'][$key . '.']['pageCommentCategory']) ? $conf['pageCommentCategory'] : $conf['parameters.'][$key . '.']['pageCommentCategory'];
+	}
 
 /**
  * Returns the UID of the comment topic author
@@ -301,9 +302,9 @@
  * @return	string		fe_user UID
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function getTopicAuthorUID($key, $conf) {
-    return empty($conf['parameters.'][$key . '.']['pageTopicAuthor']) ? $conf['pageTopicAuthor'] : $conf['parameters.'][$key . '.']['pageTopicAuthor'];
-  }
+	public static function getTopicAuthorUID($key, $conf) {
+		return empty($conf['parameters.'][$key . '.']['pageTopicAuthor']) ? $conf['pageTopicAuthor'] : $conf['parameters.'][$key . '.']['pageTopicAuthor'];
+	}
 
 /**
  * Returns the posting date for the comment thread
@@ -314,79 +315,79 @@
  * @return	integer		Unix timestamp
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  public static function getDate($key, $conf, &$data) {
-    $datecolumn = empty($conf['parameters.'][$key . '.']['postdate']) ? $conf['postdate'] : $conf['parameters.'][$key . '.']['postdate'];
+	public static function getDate($key, $conf, &$data) {
+		$datecolumn = empty($conf['parameters.'][$key . '.']['postdate']) ? $conf['postdate'] : $conf['parameters.'][$key . '.']['postdate'];
 
-    return intval($data[$datecolumn])==0 ? time() : intval($data[$datecolumn]);
-  }
+		return intval($data[$datecolumn])==0 ? time() : intval($data[$datecolumn]);
+	}
 
-/**
- * Returns the columns of a specific datarow to be available in TypoScript
- *
- * @param	string		$key: TypoScript key where to look in the parameter list
- * @param	integer		$uid: The uid of the datatable
- * @param	array		$conf: The TS configuration
- * @param	array		$pObj: Reference to the parent
- * @param	boolean		$useHook: Whether to use the hook or not
- * @return	array		data for TypoScript
- * @author  Hauke Hain <hhpreuss@googlemail.com>
- */
-  public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true) {
-    $recordsTable = empty($conf['parameters.'][$key . '.']['recordsTable']) ? $conf['recordsTable'] : $conf['parameters.'][$key . '.']['recordsTable'];
-
-    if (empty($recordsTable)) {
-      $recordsTable = 'pages';
-    } else {
-      $recordsTable = $GLOBALS['TYPO3_DB']->fullQuoteStr($recordsTable,'');
-      $recordsTable = substr($recordsTable, 1 , strlen($recordsTable)-2);
-    }
-
-    $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*',
- 					                                        $recordsTable,
-                                                  'uid=' . intval($uid),
-                                                  '', '', '1');
-
-		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 1) {
-		 $data = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		 $GLOBALS['TYPO3_DB']->sql_free_result($res);
-
-      if($useHook) {
-        // hook to modify the result of the function getTypoScriptData
-    		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'])) {
-    			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'] as $userFunc) {
-    			  $params = array(
-    					'data' => &$data,
-    					'recordsTable' => &$recordsTable,
-    					'key' => &$key,
-    					'uid' => &$uid,
-    					'conf' => &$conf,
-    				);
-    				t3lib_div::callUserFunction($userFunc, $params, $pObj);
-    			}
-    		}
-      }
-
-		 return $data;
+	/**
+	 * Returns the columns of a specific datarow to be available in TypoScript
+	 *
+	 * @param	string		$key: TypoScript key where to look in the parameter list
+	 * @param	integer		$uid: The uid of the datatable
+	 * @param	array		$conf: The TS configuration
+	 * @param	array		$pObj: Reference to the parent
+	 * @param	boolean		$useHook: Whether to use the hook or not
+	 * @return	array		data for TypoScript
+	 * @author  Hauke Hain <hhpreuss@googlemail.com>
+	 */
+	public static function getTypoScriptData($key, $uid, $conf, &$pObj, $useHook=true) {
+		$recordsTable = empty($conf['parameters.'][$key . '.']['recordsTable']) ? $conf['recordsTable'] : $conf['parameters.'][$key . '.']['recordsTable'];
+	
+		if (empty($recordsTable)) {
+			$recordsTable = 'pages';
+		} else {
+			$recordsTable = $GLOBALS['TYPO3_DB']->fullQuoteStr($recordsTable,'');
+			$recordsTable = substr($recordsTable, 1 , strlen($recordsTable)-2);
 		}
-
-    return array();
-  }
+	
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*',
+													$recordsTable,
+													'uid=' . intval($uid),
+													'', '', '1');
+	
+		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 1) {
+			 $data = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+			 $GLOBALS['TYPO3_DB']->sql_free_result($res);
+	
+			if($useHook) {
+			// hook to modify the result of the function getTypoScriptData
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'])) {
+					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['getTypoScriptDataHook'] as $userFunc) {
+						$params = array(
+										'data' => &$data,
+										'recordsTable' => &$recordsTable,
+										'key' => &$key,
+										'uid' => &$uid,
+										'conf' => &$conf,
+						);
+						t3lib_div::callUserFunction($userFunc, $params, $pObj);
+					}
+				}
+			}
+	
+			return $data;
+		}
+	
+		return array();
+	}
 
 	/**
 	 * Returns search parameter (WHERE clause)
 	 *
-	 * @param	array		$paraconf: The parameter segment of the TS plugin setup
-	 *                  TypoScipt or the parameter name and unique parameter
-	 *                  value in the linktable of the extension
-	 * @return	array		returns nothing if no parameters are configured in
+	 * @param	array	$paraconf: The parameter segment of the TS plugin setup
+	 *					TypoScipt or the parameter name and unique parameter
+	 *					value in the linktable of the extension
+	 * @return	array	returns nothing if no parameters are configured in
 	 * @author  Hauke Hain <hhpreuss@googlemail.com>
 	 */
 	public static function getParameter($paraconf) {
-    if (is_array($paraconf) === false) {
-      return array();
-    }
+		if (is_array($paraconf) === false) {
+			return array();
+		}
 
-    // hook to return own parameter
+		// hook to return own parameter
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['overwriteParameter'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum_comments']['overwriteParameter'] as $userFunc) {
 				$return = t3lib_div::callUserFunction($userFunc, $paraconf, $this);
@@ -394,173 +395,173 @@
 			return $return;
 		}
 
-    foreach($paraconf as $key => $value) {
-      $key = substr($key, 0, strlen($key)-1);
-      $uidkey = $value['uid'];
-      $gp = t3lib_div::_GP($key);
+		foreach($paraconf as $key => $value) {
+			$key = substr($key, 0, strlen($key)-1);
+			$uidkey = $value['uid'];
+			$gp = t3lib_div::_GP($key);
 
-      if (!empty($gp[$uidkey])) {
-        return array($key . '->' . $uidkey, $gp[$uidkey], $key);
-      }
-    }
+			if (!empty($gp[$uidkey])) {
+				return array($key . '->' . $uidkey, $gp[$uidkey], $key);
+			}
+		}
 
-    return array();
-  }
+		return array();
+	}
 
-	/**
-	 * Returns the page ID of the comment page
-	 *
-	 * @param	integer		$tid: ID of the exsting topic
-	 * @param	[type]		$relationTable: ...
-	 * @return	integer		page ID
-	 * @author  Hauke Hain <hhpreuss@googlemail.com>
-	 */
+/**
+ * Returns the page ID of the comment page
+ *
+ * @param	integer		$tid: ID of the exsting topic
+ * @param	[type]		$relationTable: ...
+ * @return	integer		page ID
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
 	public static function getCommentPID($tid, $relationTable=false) {
-	  if($relationTable===false) {
-      $relationTable = tx_mmforumcomments_div::getRelationTable();
-    }
+		if($relationTable===false) {
+			$relationTable = tx_mmforumcomments_div::getRelationTable();
+		}
 
-	  $PID = 0;
-    $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('pid',
-  				 $relationTable, 'fid=' . intval($tid),
-  				 '', '', '1');
+		$PID = 0;
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('pid',
+				 $relationTable, 'fid=' . intval($tid),
+				 '', '', '1');
 
 		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 1) {
-		  $PID = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+			$PID = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			$PID = intval($PID['pid']);
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 
-    return $PID;
-  }
+		return $PID;
+	}
 
-	/**
-	 * Returns the ID of the exsting topic (or zero if none is found)
-	 *
-	 *
-	 * @param	integer		$pid: ID of the page where the comments are located
-	 * @param	array		$parameters: 0: The name of the parameter; 1: the unique
-	 *                                id (value) of the parameter
-	 * @param	string		$relationTable: Table name
-	 * @return	integer		ID of the exsting topic
-	 * @author  Hauke Hain <hhpreuss@googlemail.com>
-	 */
+/**
+ * Returns the ID of the exsting topic (or zero if none is found)
+ *
+ *
+ * @param	integer		$pid: ID of the page where the comments are located
+ * @param	array		$parameters: 0: The name of the parameter; 1: the unique
+ *										id (value) of the parameter
+ * @param	string		$relationTable: Table name
+ * @return	integer		ID of the exsting topic
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
 	public static function getTopicID($pid, $parameters, $relationTable=false) {
-	  if($relationTable===false) {
-      $relationTable = tx_mmforumcomments_div::getRelationTable();
-    }
+		if($relationTable===false) {
+			$relationTable = tx_mmforumcomments_div::getRelationTable();
+		}
 
-    if (intval($pid) > 0) {
-      $where = '';
+		if (intval($pid) > 0) {
+			$where = '';
 
-      if (intval($parameters[1]) > 0) {
-        $where = ' AND parameter = \'' . $parameters[0] .
-                 '\' AND parameteruid = ' . $parameters[1];
-      } else {
-        $where = ' AND parameteruid = 0';
-      }
+			if (intval($parameters[1]) > 0) {
+				$where = ' AND parameter = \'' . $parameters[0] .
+						 '\' AND parameteruid = ' . $parameters[1];
+			} else {
+				$where = ' AND parameteruid = 0';
+			}
 
-      $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('fid',
-  					 $relationTable, 'pid=' . intval($pid) . $where,
-  					 '', '', '1');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('fid',
+					 $relationTable, 'pid=' . intval($pid) . $where,
+					 '', '', '1');
 
 			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 1) {
-			 $topicID = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			 $topicID = intval($topicID['fid']);
-			 $GLOBALS['TYPO3_DB']->sql_free_result($res);
+				$topicID = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+				$topicID = intval($topicID['fid']);
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-			 return $topicID;
+				return $topicID;
 			}
-    }
+		}
 
-    return 0;
-  }
+		return 0;
+	}
 
-	/**
-	 * Returns the ID of the first topicpost (or zero if none is found)
-	 *
-	 * @param	integer		$topicId: ID of the topic
-	 * @param	array		$storagePID: ID of the page where the forendata is located
-	 * @return	integer		ID of the first topicpost
-	 * @author  Hauke Hain <hhpreuss@googlemail.com>
-	 */
+/**
+ * Returns the ID of the first topicpost (or zero if none is found)
+ *
+ * @param	integer		$topicId: ID of the topic
+ * @param	array		$storagePID: ID of the page where the forendata is located
+ * @return	integer		ID of the first topicpost
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
 	public static function getFirstTopicPostID($topicId, $storagePID) {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-  		'topic_first_post_id',
-  		'tx_mmforum_topics',
-  		'deleted = 0 AND hidden = 0 AND uid = ' . intval($topicId) . ' AND pid = ' . intval($storagePID),
-  		'', '', '1' );
+		'topic_first_post_id',
+		'tx_mmforum_topics',
+		'deleted = 0 AND hidden = 0 AND uid = ' . intval($topicId) . ' AND pid = ' . intval($storagePID),
+		'', '', '1' );
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
 		return intval($row['topic_first_post_id']);
-  }
+	}
 
-	/**
-	 * Returns the ID of the first topicpost which is shown on the page
-	 * (or zero if none is found)
-	 *
-	 * @param	integer		$topicId: ID of the topic
-	 * @param	array		$storagePID: ID of the page where the forendata is located
-	 * @param	integer		$excludePostID: ID of the post that should be ignored
-	 * @return	integer		ID of the first shown topicpost
-	 * @author  Hauke Hain <hhpreuss@googlemail.com>
-	 */
+/**
+ * Returns the ID of the first topicpost which is shown on the page
+ * (or zero if none is found)
+ *
+ * @param	integer		$topicId: ID of the topic
+ * @param	array		$storagePID: ID of the page where the forendata is located
+ * @param	integer		$excludePostID: ID of the post that should be ignored
+ * @return	integer		ID of the first shown topicpost
+ * @author  Hauke Hain <hhpreuss@googlemail.com>
+ */
 	public static function getFirstTopicPostToShowID($topicId, $storagePID, $excludePostID=0) {
-	  $where = '';
+		$where = '';
 
-    if (intval($excludePostID) > 0) {
-      $where = ' AND uid <> ' . intval($excludePostID);
-    }
+		if (intval($excludePostID) > 0) {
+			$where = ' AND uid <> ' . intval($excludePostID);
+		}
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid',
 			'tx_mmforum_posts',
 			'deleted = 0 AND hidden = 0 AND topic_id = ' . intval($topicId) .
-      ' AND pid = ' . intval($storagePID) .	$where
+			' AND pid = ' . intval($storagePID) .	$where
 		);
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
 		return intval($row['uid']);
-  }
+	}
 
-	/**
-	 * Clears the cache of a specific page
-	 *
-	 * @param	integer		$pid: ID of the page
-	 * @return	void
-	 */
-  public static function clearPageCache($pid) {
-    if (intval($pid) > 0) {
-      $TCE = t3lib_div::makeInstance('t3lib_TCEmain');
-      $TCE->admin = 1;
-      $TCE->clear_cacheCmd($pid);
-    }
-  }
+/**
+ * Clears the cache of a specific page
+ *
+ * @param	integer		$pid: ID of the page
+ * @return	void
+ */
+	public static function clearPageCache($pid) {
+		$pid = intval($pid);
 
-	/**
-	 * Loads the tx_mmforum_config.ts (default values of the mm_forum install
-	 * tool)
-	 *
-	 * @return	array		parsed TypoScript setup
-	 */
-  public static function getInstallToolSettings() {
+		if ($pid > 0) {
+			$GLOBALS['TSFE']->clearPageCacheContent_pidList($pid);
+		}
+	}
+
+/**
+ * Loads the tx_mmforum_config.ts (default values of the mm_forum install
+ * tool)
+ *
+ * @return	array		parsed TypoScript setup
+ */
+	 public static function getInstallToolSettings() {
 		$filename = str_replace('ext/mm_forum_comments/', 'tx_mmforum_config.ts',
-                            t3lib_extMgm::extPath('mm_forum_comments'));
+									t3lib_extMgm::extPath('mm_forum_comments'));
 		$ret = array();
 
 		if(file_exists($filename)) {
-      $conf = file_get_contents($filename);
-      $parser  = new t3lib_TSparser();
-  		$parser->parse($conf);
-  		$ret = $parser->setup['plugin.']['tx_mmforum.'];
-    }
+			$conf = file_get_contents($filename);
+			$parser  = new t3lib_TSparser();
+			$parser->parse($conf);
+			$ret = $parser->setup['plugin.']['tx_mmforum.'];
+		}
 
 		return $ret;
-  }
+	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/mm_forum_comments/lib/class.tx_mmforumcomments_div.php'])	{

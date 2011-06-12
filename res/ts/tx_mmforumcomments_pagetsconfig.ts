@@ -30,7 +30,6 @@ mod.web_txmmforumM1 {
 						mmforumcomments_pageTopicAuthor {
 							type = group
 							type.table = fe_users
-
 							label       = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.pageTopicAuthor.title
 							description = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.pageTopicAuthor.desc
 						}
@@ -44,7 +43,7 @@ mod.web_txmmforumM1 {
 
 						mmforumcomments_postOrderingMode = MMFORUM_CONF_ITEM
 						mmforumcomments_postOrderingMode {
-						type = select
+							type = select
 							type.options.DESC = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.desc
 							type.options.ASC  = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.asc
 							label             = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.postOrderingMode.title
@@ -62,6 +61,13 @@ mod.web_txmmforumM1 {
 							type = checkbox
 							label       = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.clearCache.title
 							description = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.clearCache.desc
+						}
+
+						mmforumcomments_IgnorePIDlistForClearCache = MMFORUM_CONF_ITEM
+						mmforumcomments_IgnorePIDlistForClearCache {
+							type = string
+							label       = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.IgnorePIDlistForClearCache.title
+							description = LLL:EXT:mm_forum_comments/res/lang/locallang.xml:mod.IgnorePIDlistForClearCache.desc
 						}
 					}
 				}

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Hauke Hain <hhpreuss@googlemail.com>
+*  (c) 2010-2011 Hauke Hain <hhpreuss@googlemail.com>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -46,15 +46,15 @@ require_once(t3lib_extMgm::extPath('mm_forum_comments').'lib/class.tx_mmforumcom
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
 	public function processPostInsertArray($insertArray, $obj) {
-	  $conf = tx_mmforumcomments_div::getInstallToolSettings();
+		$conf = tx_mmforumcomments_div::getInstallToolSettings();
+		$pid = tx_mmforumcomments_div::getCommentPID($insertArray['topic_id'],
+													'tx_mmforumcomments_links');
 
-	  if ($conf['mmforumcomments_clearCache'] &&
-        (($pid = tx_mmforumcomments_div::getCommentPID($insertArray['topic_id'],
-          'tx_mmforumcomments_links')) > 0)) {
-      tx_mmforumcomments_div::clearPageCache($pid);
-    }
+		if ($conf['mmforumcomments_clearCache'] && ($pid > 0) && !t3lib_div::inList($conf['mmforumcomments_IgnorePIDlistForClearCache'], $pid)) {
+			tx_mmforumcomments_div::clearPageCache($pid);
+		}
 
-    return $insertArray;
+		return $insertArray;
 	}
 
 }

@@ -28,10 +28,10 @@
  *
  *   54: class tx_mmforumcomments_pi1 extends tx_mmforum_pi1
  *   67:     function main($content, $conf)
- *  193:     private function newTopicCreationAllowed($key, $conf)
- *  209:     private function displayAnswerButton($topicID='')
- *  245:     private function displayTopicButton($imgpath)
- *  274:     function pi_loadLL()
+ *  179:     private function newTopicCreationAllowed($key, $conf)
+ *  195:     private function displayAnswerButton($topicID='')
+ *  232:     private function displayTopicButton($imgpath)
+ *  278:     function pi_loadLL()
  *
  * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -57,133 +57,133 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 	var $extKey        = 'mm_forum_comments';	// The extension key.
 	var $pi_checkCHash = true;
 
-	/**
-	 * The main method of the PlugIn
-	 *
-	 * @param	string		$content: The PlugIn content
-	 * @param	array		$conf: The PlugIn configuration
-	 * @return	The		content that is displayed on the website
-	 */
+/**
+ * The main method of the PlugIn
+ *
+ * @param	string		$content: The PlugIn content
+ * @param	array		$conf: The PlugIn configuration
+ * @return	The		content that is displayed on the website
+ */
 	function main($content, $conf) {
 		$this->pi_setPiVarDefaults();
 		$pid = tx_mmforumcomments_div::getPageID();
-  	$setup = tx_mmforumcomments_div::loadTSSetupForPage($pid);
+		$setup = tx_mmforumcomments_div::loadTSSetupForPage($pid);
 		$parameters = tx_mmforumcomments_div::getParameter($conf['parameters.']);
 
 		if (!empty($conf['parameters.'][$parameters[2] . '.']['recordsTable'])) {
-		  //do not use hooks, because of performance (I only need the page id)
-		  $data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $this, false);
-      $pid = $data['pid'];
-    }
+			//do not use hooks, because of performance (I only need the page id)
+			$data = tx_mmforumcomments_div::getTypoScriptData($parameters[2], intval($parameters[1])==0 ? $pid : intval($parameters[1]), $conf, $this, false);
+			$pid = $data['pid'];
+		}
 
-    $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
+		$topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
 
-    /* Create new topic, if needed */
-    if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {
-      tx_mmforumcomments_div::createTopicForRecord($parameters, $conf, $pid, $setup['plugin.']['tx_mmforum.']['storagePID'], $this, true, $data);
-      $topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
-    }
+		/* Create new topic, if needed */
+		if ($topicID == 0 && $this->newTopicCreationAllowed($parameters[2], $conf)) {
+			tx_mmforumcomments_div::createTopicForRecord($parameters, $conf, $pid, $setup['plugin.']['tx_mmforum.']['storagePID'], $this, true, $data);
+			$topicID = tx_mmforumcomments_div::getTopicID($pid, $parameters);
+		}
 
-    /* Return nothing if no topic is found. */
-    if ($topicID === 0) {
-      return $content;
-    }
+		/* Return nothing if no topic is found. */
+		if ($topicID === 0) {
+			return $content;
+		}
 
 		/* Initialize mm_forum base object */
 		$this->init($setup['plugin.']['tx_mmforum_pi1.']);
-	  $this->pi_loadLL();
-    $this->prefixId = 'tx_mmforum_pi1'; //prefix ID for button creation
-  	$this->fid = $this->conf['pid_forum']; //forum page id for button creation
-	  if (intval($conf['postPerPage']) > 0) $this->conf['post_limit'] = $conf['postPerPage'];
+		$this->pi_loadLL();
+		$this->prefixId = 'tx_mmforum_pi1'; //prefix ID for button creation
+		$this->fid = $this->conf['pid_forum']; //forum page id for button creation
+		if (intval($conf['postPerPage']) > 0) $this->conf['post_limit'] = $conf['postPerPage'];
 
 		/* Show comments */
-    if ($conf['hideFirstPost']) {
-		  $this->firstPostID = tx_mmforumcomments_div::getFirstTopicPostID($topicID, $this->conf['storagePID']);
-    }
+		if ($conf['hideFirstPost']) {
+			$this->firstPostID = tx_mmforumcomments_div::getFirstTopicPostID($topicID, $this->conf['storagePID']);
+		}
 
-    if ($hasComments = (tx_mmforumcomments_div::getFirstTopicPostToShowID($topicID, $this->conf['storagePID'], $this->firstPostID) > 0)) {
-		  $this->piVars['tid'] = $topicID; //topic id for list_post
-  		//use template with posttable only (no topic title, pagebrowser etc.):
-      $this->conf['LIST_POSTS_BEGIN'] = '###LIST_POSTS_BEGIN_MINIMAL###';
-      $this->conf['LIST_POSTS_END'] = '###LIST_POSTS_END_MINIMAL###';
-      $content = tx_mmforum_postfunctions::list_post($content, $this->conf,
-                                                     $conf['postOrderingMode']);
-      $content = $this->cObj->stdWrap($content, $conf['template.']['commentsWrap.']);
-    } else {
-      $content .= $this->cObj->stdWrap($this->pi_getLL('nocomments') .
-                  (intval($GLOBALS['TSFE']->fe_user->user['uid']) == 0 ? '<br />' . $this->pi_getLL('noLogin') : ''),
-                  $conf['template.']['noCommentsWrap.']);
-    }
+		if ($hasComments = (tx_mmforumcomments_div::getFirstTopicPostToShowID($topicID, $this->conf['storagePID'], $this->firstPostID) > 0)) {
+			$this->piVars['tid'] = $topicID; //topic id for list_post
+			//use template with posttable only (no topic title, pagebrowser etc.):
+			$this->conf['LIST_POSTS_BEGIN'] = '###LIST_POSTS_BEGIN_MINIMAL###';
+			$this->conf['LIST_POSTS_END'] = '###LIST_POSTS_END_MINIMAL###';
+			$content = tx_mmforum_postfunctions::list_post($content, $this->conf,
+															$conf['postOrderingMode']);
+			$content = $this->cObj->stdWrap($content, $conf['template.']['commentsWrap.']);
+		} else {
+			$content .= $this->cObj->stdWrap($this->pi_getLL('nocomments') .
+						(intval($GLOBALS['TSFE']->fe_user->user['uid']) == 0 ? '<br />' . $this->pi_getLL('noLogin') : ''),
+						$conf['template.']['noCommentsWrap.']);
+		}
 
-    $template = $this->cObj->fileResource($conf['template.']['file']);
+		$template = $this->cObj->fileResource($conf['template.']['file']);
 
 		if ($hasComments) {
-      $topic_replies = intval($this->local_cObj->data['topic_replies']);
+			$topic_replies = intval($this->local_cObj->data['topic_replies']);
+	
+			if (!$conf['hideFirstPost']) {
+				$topic_replies++;
+			}
+	
+			//Show comment numbers only if reasonable
+			$markers['###LINKTOTOPIC###'] = $this->displayTopicButton($conf['template.']['commentButtonPath_img'], $conf['template.']['commentButtonNormalStdWrap.']['wrap']);
+	
+			if ($topic_replies > 1) {
+				$markers['###TOPIC_REPLIES###'] = $topic_replies;
+				$markers['###LABEL_SHOWN_COMMENTS###'] = $this->pi_getLL('showncomments');
+				$markers['###LABEL_COMMENTS###'] = $this->pi_getLL('comments');
+	
+				if ($topic_replies > intval($this->conf['post_limit'])) {
+					$markers['###LABEL_COMMENTS###'] = $this->pi_getLL('commentsSingle');
+				}
+			} else {
+				$markers['###TOPIC_REPLIES###'] = '';
+				$markers['###LABEL_SHOWN_COMMENTS###'] = '';
+				$markers['###LABEL_COMMENTS###'] = '';
+			}
+	
+			if ($topic_replies > intval($this->conf['post_limit'])) {
+				$markers['###LABEL_TOPIC_REPLIES###'] = $this->pi_getLL('topicreplies');
+				$markers['###SHOWN_COMMENTS###'] = $this->conf['post_limit'];
+			} else {
+				$markers['###LABEL_TOPIC_REPLIES###'] = '';
+				$markers['###SHOWN_COMMENTS###'] = '';
+			}
+		} else {
+			$markers = array(
+					'###LINKTOTOPIC###'          => '',
+					'###LABEL_TOPIC_REPLIES###'  => '',
+					'###TOPIC_REPLIES###'        => '',
+					'###LABEL_SHOWN_COMMENTS###' => '',
+					'###SHOWN_COMMENTS###'       => '',
+					'###LABEL_COMMENTS###'       => '',
+				);
+		}
 
-      if (!$conf['hideFirstPost']) {
-        $topic_replies++;
-      }
+		$markers['###HEADLINE###'] = $this->cObj->stdWrap($this->pi_getLL('title'), $conf['template.']['headlineWrap.']);
+		$markers['###COMMENTS###'] = $content;
+		$markers['###ANSWERBUTTON###'] = $this->displayAnswerButton($topicID);
+		$markers['###NOCOMMENTSSTYLE###'] = $conf['template.']['noCommentsStyle'];
 
-      //Show comment numbers only if reasonable
-  		$markers['###LINKTOTOPIC###'] = $this->displayTopicButton($conf['template.']['commentButtonPath_img'], $conf['template.']['commentButtonNormalStdWrap.']['wrap']);
-
-      if ($topic_replies > 1) {
-        $markers['###TOPIC_REPLIES###'] = $topic_replies;
-        $markers['###LABEL_SHOWN_COMMENTS###'] = $this->pi_getLL('showncomments');
-        $markers['###LABEL_COMMENTS###'] = $this->pi_getLL('comments');
-
-        if ($topic_replies > intval($this->conf['post_limit'])) {
-          $markers['###LABEL_COMMENTS###'] = $this->pi_getLL('commentsSingle');
-        }
-  		} else {
-        $markers['###TOPIC_REPLIES###'] = '';
-        $markers['###LABEL_SHOWN_COMMENTS###'] = '';
-        $markers['###LABEL_COMMENTS###'] = '';
-      }
-
-      if ($topic_replies > intval($this->conf['post_limit'])) {
-        $markers['###LABEL_TOPIC_REPLIES###'] = $this->pi_getLL('topicreplies');
-        $markers['###SHOWN_COMMENTS###'] = $this->conf['post_limit'];
-  		} else {
-        $markers['###LABEL_TOPIC_REPLIES###'] = '';
-        $markers['###SHOWN_COMMENTS###'] = '';
-      }
-    } else {
-      $markers = array(
-  					'###LINKTOTOPIC###'          => '',
-  					'###LABEL_TOPIC_REPLIES###'  => '',
-  					'###TOPIC_REPLIES###'        => '',
-  					'###LABEL_SHOWN_COMMENTS###' => '',
-  					'###SHOWN_COMMENTS###'       => '',
-  					'###LABEL_COMMENTS###'       => '',
-  				);
-    }
-
-    $markers['###HEADLINE###'] = $this->cObj->stdWrap($this->pi_getLL('title'), $conf['template.']['headlineWrap.']);
-  	$markers['###COMMENTS###'] = $content;
-  	$markers['###ANSWERBUTTON###'] = $this->displayAnswerButton($topicID);
-  	$markers['###NOCOMMENTSSTYLE###'] = $conf['template.']['noCommentsStyle'];
-
-    $content = $this->cObj->substituteMarkerArray($template, $markers);
+		$content = $this->cObj->substituteMarkerArray($template, $markers);
 
 		return $this->pi_wrapInBaseClass($content);
 	}
 
-	/**
-	 * Checks if fe plugin is allowed to create a new topic
-	 *
-	 * @param	string		$key: parameter key of the post vars
-	 * @param	array  		$conf: plugin TypoScript setup
-	 * @return	boolean	returns fals if topic creation is forbidden by TypoScript def. 
-	 */
+/**
+ * Checks if fe plugin is allowed to create a new topic
+ *
+ * @param	string		$key: parameter key of the post vars
+ * @param	array  		$conf: plugin TypoScript setup
+ * @return	boolean	returns fals if topic creation is forbidden by TypoScript def. 
+ */
 	private function newTopicCreationAllowed($key, $conf) {
-	 $bool = isset($conf['parameters.'][$key . '.']['createNewTopics']) ? $conf['parameters.'][$key . '.']['createNewTopics'] : $conf['createNewTopics'];
+		$bool = isset($conf['parameters.'][$key . '.']['createNewTopics']) ? $conf['parameters.'][$key . '.']['createNewTopics'] : $conf['createNewTopics'];
 
-   if($bool === true || $bool === false || $bool === null) {
-    return true; //return true if $bool isn't set in TypoScript
-   } else {
-    return (bool)$bool;
-   }
+		if($bool === true || $bool === false || $bool === null) {
+			return true; //return true if $bool isn't set in TypoScript
+		} else {
+			return (bool)$bool;
+		}
 	}
 
 /**
@@ -193,14 +193,14 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
  * @return	string		The HTML-Code
  */
 	private function displayAnswerButton($topicID='') {
-    $topicData = $this->local_cObj->data;
+		$topicData = $this->local_cObj->data;
 
-    if(empty($topicData)) {
-      if (intval($topicID) === 0) return;
-      $topicData = $this->getTopicData($topicID);
-    }
+		if(empty($topicData)) {
+			if (intval($topicID) === 0) return;
+			$topicData = $this->getTopicData($topicID);
+		}
 
-    if ((!$topicData['read_flag'] && !$topicData['closed_flag']) || $this->getIsMod($topicData['forum_id']) || $this->getIsAdmin()) {
+		if ((!$topicData['read_flag'] && !$topicData['closed_flag']) || $this->getIsMod($topicData['forum_id']) || $this->getIsAdmin()) {
 			if ($this->getMayWrite_topic($topicData['uid'])) {
 				$linkParams[$this->prefixId] = array(
 					'action' => 'new_post',
@@ -218,7 +218,7 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 		}
 
 		return $btn;
-  }
+	}
 
 /**
  * Creates a button that links to the last post of the topic
@@ -240,33 +240,33 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
 			$linkParams[$this->prefixId]['fid'] = $this->local_cObj->data['forum_id'];
 		}
 
-	if (!empty($imgpath)) {
-		//change image setup temporarily
-		$tmpimgpath = $this->conf['path_img'];
-		$tmpButtonWrap = $this->conf['buttons.']['normal.']['stdWrap.']['wrap'];
-
-		// createButton uses file_exists -> correct the path
-		$imgpath = str_replace('EXT:mm_forum_comments/', t3lib_extMgm::siteRelPath('mm_forum_comments'), $imgpath);
-
-		$imgconf = $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import']; 
-		$this->conf['path_img'] = $imgpath;
-		$this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgpath . 'buttons/icons/';
+		if (!empty($imgpath)) {
+			//change image setup temporarily
+			$tmpimgpath = $this->conf['path_img'];
+			$tmpButtonWrap = $this->conf['buttons.']['normal.']['stdWrap.']['wrap'];
+	
+			// createButton uses file_exists -> correct the path
+			$imgpath = str_replace('EXT:mm_forum_comments/', t3lib_extMgm::siteRelPath('mm_forum_comments'), $imgpath);
+	
+			$imgconf = $this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import']; 
+			$this->conf['path_img'] = $imgpath;
+			$this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgpath . 'buttons/icons/';
+		}
+	
+		if (!empty($buttonWrap)) {
+			$this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $buttonWrap;
+		}
+	
+		$btn = $this->createButton('gotoForum', $linkParams, $pid);
+	
+		if (!empty($imgpath)) {
+			$this->conf['path_img'] = $tmpimgpath;
+			$this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgconf;
+			$this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $tmpButtonWrap;
+		}
+	
+		return $btn;
 	}
-
-	if (!empty($buttonWrap)) {
-		$this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $buttonWrap;
-	}
-
-	$btn = $this->createButton('gotoForum', $linkParams, $pid);
-
-	if (!empty($imgpath)) {
-		$this->conf['path_img'] = $tmpimgpath;
-		$this->conf['buttons.']['normal.']['1.']['file.']['10.']['file.']['import'] = $imgconf;
-		$this->conf['buttons.']['normal.']['stdWrap.']['wrap'] = $tmpButtonWrap;
-	}
-
-	return $btn;
-  }
 
 /**
  * Overwrites pi_loadLL and merges the locallang.xml files
@@ -275,20 +275,21 @@ class tx_mmforumcomments_pi1 extends tx_mmforum_pi1 {
  * @return	void
  * @author  Hauke Hain <hhpreuss@googlemail.com>
  */
-  function pi_loadLL()	{
-    parent::pi_loadLL();
+	function pi_loadLL()	{
+		parent::pi_loadLL();
 
- 		if (!$this->LLalreadyLoaded) {
- 		  $this->LLalreadyLoaded = true;
-   		$LOCAL_LANG = t3lib_div::readLLfile(t3lib_extMgm::extPath('mm_forum').'pi1/locallang.xml', $this->LLkey);
-   		$this->LOCAL_LANG = array_merge_recursive($LOCAL_LANG,is_array($this->LOCAL_LANG) ? $this->LOCAL_LANG : array());
+		if (!$this->LLalreadyLoaded) {
+			$this->LLalreadyLoaded = true;
+			$LOCAL_LANG = t3lib_div::readLLfile(t3lib_extMgm::extPath('mm_forum').'pi1/locallang.xml', $this->LLkey);
+			$this->LOCAL_LANG = array_merge_recursive($LOCAL_LANG,is_array($this->LOCAL_LANG) ? $this->LOCAL_LANG : array());
 
-   		if ($this->altLLkey) {
-   			$LOCAL_LANG = t3lib_div::readLLfile($basePath,$this->altLLkey);
-   			$this->LOCAL_LANG=array_merge_recursive($LOCAL_LANG,is_array($this->LOCAL_LANG) ? $this->LOCAL_LANG : array());
-  		}
-    }
-  }
+			if ($this->altLLkey) {
+				$LOCAL_LANG = t3lib_div::readLLfile($basePath,$this->altLLkey);
+				$this->LOCAL_LANG=array_merge_recursive($LOCAL_LANG,is_array($this->LOCAL_LANG) ? $this->LOCAL_LANG : array());
+			}
+		}
+	}
+
 }
 
 

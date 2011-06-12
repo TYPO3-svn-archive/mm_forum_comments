@@ -1,6 +1,8 @@
 2011-06-11 Hauke Hain  <hhpreuss@googlemail.com>
 
-	* "EXT:mm_forum_comments" gets replaced with rel path now
+	* New feature: Clear cache but ignore some pages
+	* "EXT:mm_forum_comments" gets replaced with relative path now
+	* clearing the cache is TYPO3 4.5 compatible now
 
 2011-06-10 Hauke Hain  <hhpreuss@googlemail.com>
 
