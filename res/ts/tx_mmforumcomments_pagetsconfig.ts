@@ -1,7 +1,5 @@
 mod.web_txmmforumM1 {
 
-	defaultConfigFiles.mm_forum_comments = EXT:mm_forum_comments/ext_typoscript_constants.txt
-
 	essentialConfiguration {
 		mmforumcomments_pageCommentCategory = 1
 		mmforumcomments_pageTopicAuthor     = 1

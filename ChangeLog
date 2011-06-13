@@ -1,3 +1,7 @@
+2011-06-13 Hauke Hain  <hhpreuss@googlemail.com>
+
+	* Small bugfix: Removed loading of already deleted file from TypoScript
+
 2011-06-11 Hauke Hain  <hhpreuss@googlemail.com>
 
 	* New feature: Clear cache but ignore some pages
